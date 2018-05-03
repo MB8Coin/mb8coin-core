@@ -1,0 +1,5 @@
+Building MB8Coin
+
+See doc/build-*.md for instructions on building mb8coind,
+the intended-for-services, no-graphical-interface, reference
+implementation of MB8Coin.

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=MB8Coin
+Comment=MB8Coin P2P Cryptocurrency
+Comment[fr]=MB8Coin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=MB8Coin, eşten eşe kriptografik sanal para birimi
+Exec=mb8coin-qt %u
+Terminal=false
+Type=Application
+Icon=mb8coin128
+MimeType=x-scheme-handler/mb8coin;
+Categories=Office;Finance;

@@ -1,0 +1,8 @@
+/usr/bin/mb8coin-cli		--	gen_context(system_u:object_r:mb8coin_exec_t,s0)
+/usr/sbin/mb8coind		--	gen_context(system_u:object_r:mb8coin_exec_t,s0)
+/usr/lib(64)?/mb8coin/mb8coind		--	gen_context(system_u:object_r:mb8coin_exec_t,s0)
+
+/etc/mb8coin(/.*)?		gen_context(system_u:object_r:mb8coin_conf_t,s0)
+/var/lib/mb8coin(/.*)?		gen_context(system_u:object_r:mb8coin_var_lib_t,s0)
+
+(/var)?/run/mb8coind(/.*)?   gen_context(system_u:object_r:mb8coin_var_run_t,s0)

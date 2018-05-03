@@ -1,0 +1,33 @@
+# /etc/conf.d/mb8coind: config file for /etc/init.d/mb8coind
+
+# Config file location
+#MB8COIND_CONFIGFILE="/etc/mb8coin/mb8coin.conf"
+
+# What directory to write pidfile to?  (created and owned by $MB8COIND_USER)
+#MB8COIND_PIDDIR="/var/run/mb8coind"
+
+# What filename to give the pidfile
+#MB8COIND_PIDFILE="${MB8COIND_PIDDIR}/mb8coind.pid"
+
+# Where to write mb8coind data (be mindful that the blockchain is large)
+#MB8COIND_DATADIR="/var/lib/mb8coind"
+
+# User and group to own mb8coind process
+#MB8COIND_USER="mb8coin"
+#MB8COIND_GROUP="mb8coin"
+
+# Path to mb8coind executable
+#MB8COIND_BIN="/usr/bin/mb8coind"
+
+# Nice value to run mb8coind under
+#MB8COIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+MB8COIND_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for mb8coind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+MB8COIND_SIGTERM_TIMEOUT=60

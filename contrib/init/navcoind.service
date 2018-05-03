@@ -1,0 +1,22 @@
+[Unit]
+Description=MB8Coin's distributed currency daemon
+After=network.target
+
+[Service]
+User=mb8coin
+Group=mb8coin
+
+Type=forking
+PIDFile=/var/lib/mb8coind/mb8coind.pid
+ExecStart=/usr/bin/mb8coind -daemon -pid=/var/lib/mb8coind/mb8coind.pid \
+-conf=/etc/mb8coin/mb8coin.conf -datadir=/var/lib/mb8coind -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
