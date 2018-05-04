@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NavTechInit</class>
- <widget class="QDialog" name="NavTechInit">
+ <class>MB8ServerInit</class>
+ <widget class="QDialog" name="MB8ServerInit">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -16,7 +16,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>NavTech Setup</string>
+   <string>MB8Server Setup</string>
   </property>
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
@@ -40,7 +40,7 @@
        <bool>false</bool>
       </property>
       <property name="text">
-       <string>MB8Coin uses an unique parallel cluster of nodes called NavTech to protect the privacy of your transactions.</string>
+       <string>Please check which nodes you wish to connect to.</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -69,7 +69,7 @@
        </size>
       </property>
       <property name="text">
-       <string>You will find below the list of the MB8Coin Foundation Servers. Feel free to modify this list to include your prefered servers:</string>
+       <string>You will find below the list of standard MB8Coin Nodes. Feel free to modify this list to include your prefered servers:</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -136,7 +136,7 @@
   <connection>
    <sender>buttonBox_2</sender>
    <signal>accepted()</signal>
-   <receiver>NavTechInit</receiver>
+   <receiver>MB8ServerInit</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">

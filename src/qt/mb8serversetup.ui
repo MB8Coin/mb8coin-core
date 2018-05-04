@@ -82,7 +82,7 @@
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>When performing a private payment, a random server from this list will be used.</string>
+       <string>When performing a payment, a random server from this list will be used.</string>
       </property>
      </widget>
     </item>

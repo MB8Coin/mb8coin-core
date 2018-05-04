@@ -53,7 +53,7 @@ void mb8serversetup::addMB8ServerServer()
         if (serverToAdd.toStdString() == *it)
             break;
 
-    WriteConfigFile("addanonserver", serverToAdd.toStdString());
+    WriteConfigFile("addnode", serverToAdd.toStdString());
     if (it == vAddedAnonServers.end())
         vAddedAnonServers.push_back(serverToAdd.toStdString());
 
@@ -66,7 +66,7 @@ void mb8serversetup::reloadMB8Servers()
 {
     ui->serversListWidget->clear();
 
-    const std::vector<std::string>& confAnonServers = mapMultiArgs["-addanonserver"];
+    const std::vector<std::string>& confAnonServers = mapMultiArgs["-addnode"];
 
     BOOST_FOREACH(std::string confAnonServer, confAnonServers) {
         ui->serversListWidget->addItem(QString::fromStdString(confAnonServer));

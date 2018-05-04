@@ -10,21 +10,21 @@
 #include <QStringList>
 #include <QUrl>
 
-NavTechInit::NavTechInit(QWidget *parent) :
+MB8ServerInit::MB8ServerInit(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::NavTechInit)
+    ui(new Ui::MB8ServerInit)
 {
     ui->setupUi(this);
 }
 
-NavTechInit::~NavTechInit()
+MB8ServerInit::~MB8ServerInit()
 {
     delete ui;
 }
 
-void NavTechInit::ShowMB8ServerIntro(bool exitAfter)
+void MB8ServerInit::ShowMB8ServerIntro(bool exitAfter)
 {
-    NavTechInit mb8serverinit;
+    MB8ServerInit mb8serverinit;
     mb8serverinit.setWindowIcon(QIcon(":icons/mb8coin"));
     mb8serverinit.setStyleSheet(Skinize());
 
@@ -44,12 +44,12 @@ void NavTechInit::ShowMB8ServerIntro(bool exitAfter)
         QString strippedServer = Server.remove(' ');
         if(strippedServer != "")
         {
-            WriteConfigFile("addanonserver",strippedServer.toStdString());
+            WriteConfigFile("addnode",strippedServer.toStdString());
         }
     }
 }
 
-QString NavTechInit::GetServers()
+QString MB8ServerInit::GetServers()
 {
     return ui->plainTextEdit->toPlainText();
 }
