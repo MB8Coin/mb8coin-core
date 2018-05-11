@@ -6,7 +6,7 @@ SDK_PATH ?= $(BASEDIR)/SDKs
 NO_QT ?=
 NO_WALLET ?=
 NO_UPNP ?=
-FALLBACK_DOWNLOAD_PATH ?= https://mb8coin.org/depends-sources
+FALLBACK_DOWNLOAD_PATH ?= https://navcoin.org/depends-sources
 
 BUILD = $(shell ./config.guess)
 HOST ?= $(BUILD)
