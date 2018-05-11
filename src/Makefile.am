@@ -151,7 +151,6 @@ MB8COIN_CORE_H = \
   versionbits.h \
   wallet/crypter.h \
   wallet/db.h \
-  wallet/mb8server.h \
   wallet/rpcwallet.h \
   wallet/wallet.h \
   wallet/walletdb.h \
@@ -228,7 +227,6 @@ libmb8coin_wallet_a_SOURCES = \
   consensus/cfund.cpp \
   wallet/crypter.cpp \
   wallet/db.cpp \
-  wallet/mb8server.cpp \
   wallet/rpcdump.cpp \
   wallet/rpcwallet.cpp \
   wallet/wallet.cpp \

@@ -57,7 +57,6 @@ public Q_SLOTS:
     void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& stakingBalance, const CAmount& immatureBalance,
                     const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
     void checkMB8Servers();
-    void showNavTechDialog();
     void anonsendCheckboxClick();
     void useFullAmount();
 

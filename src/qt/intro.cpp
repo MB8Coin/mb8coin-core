@@ -11,7 +11,6 @@
 #include "skinize.h"
 
 #include "guiutil.h"
-#include "mb8serverinit.h"
 
 #include "util.h"
 

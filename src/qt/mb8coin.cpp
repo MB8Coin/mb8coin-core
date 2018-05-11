@@ -19,7 +19,6 @@
 #include "splashscreen.h"
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
-#include "mb8serversetup.h"
 
 #ifdef ENABLE_WALLET
 #include "paymentserver.h"
@@ -612,8 +611,8 @@ int main(int argc, char *argv[])
 
     if(GetArg("-firstrun","0") == "1")
     {
-        mb8serversetup* setupNavTech = new mb8serversetup();
-        setupNavTech->showMB8ServerIntro();
+        //mb8serversetup* setupNavTech = new mb8serversetup();
+        //setupNavTech->showMB8ServerIntro();
     }
 
     /// 7. Determine network (and switch to network specific options)

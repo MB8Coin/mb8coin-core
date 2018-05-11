@@ -106,9 +106,6 @@ QT_FORMS_UI = \
   qt/forms/sendcoinsentry.ui \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui \
-  qt/mb8serverinit.ui \
-  qt/mb8serveritem.ui \
-  qt/mb8serversetup.ui \
   qt/getaddresstoreceive.ui
 
 QT_MOC_CPP = \
@@ -129,9 +126,6 @@ QT_MOC_CPP = \
   qt/moc_intro.cpp \
   qt/moc_macdockiconhandler.cpp \
   qt/moc_macnotificationhandler.cpp \
-  qt/moc_mb8serverinit.cpp \
-  qt/moc_mb8serversetup.cpp \
-  qt/moc_mb8serveritem.cpp \
   qt/moc_getaddresstoreceive.cpp \
   qt/moc_notificator.cpp \
   qt/moc_openuridialog.cpp \
@@ -201,9 +195,6 @@ MB8COIN_QT_H = \
   qt/listview.h \
   qt/macdockiconhandler.h \
   qt/macnotificationhandler.h \
-  qt/mb8serverinit.h \
-  qt/mb8serveritem.h \
-  qt/mb8serversetup.h \
   qt/getaddresstoreceive.h \
   qt/networkstyle.h \
   qt/notificator.h \
@@ -322,9 +313,6 @@ MB8COIN_QT_CPP = \
   qt/mb8coinamountfield.cpp \
   qt/mb8coingui.cpp \
   qt/mb8coinunits.cpp \
-  qt/mb8serverinit.cpp \
-  qt/mb8serveritem.cpp \
-  qt/mb8serversetup.cpp \
   qt/getaddresstoreceive.cpp \
   qt/clientmodel.cpp \
   qt/csvmodelwriter.cpp \

@@ -18,8 +18,6 @@
 #include "skinize.h"
 #include "util.h"
 #include "utilstrencodings.h"
-#include "mb8serverinit.h"
-#include "mb8serversetup.h"
 
 #include "base58.h"
 #include "coincontrol.h"
@@ -57,7 +55,6 @@ SendCoinsDialog::SendCoinsDialog(const PlatformStyle *platformStyle, QWidget *pa
 
     // Coin Control
     connect(ui->pushButtonCoinControl, SIGNAL(clicked()), this, SLOT(coinControlButtonClicked()));
-    //connect(ui->noMB8ServerButton, SIGNAL(clicked()), this, SLOT(showNavTechDialog()));
     connect(ui->checkBoxCoinControlChange, SIGNAL(stateChanged(int)), this, SLOT(coinControlChangeChecked(int)));
     connect(ui->lineEditCoinControlChange, SIGNAL(textEdited(const QString &)), this, SLOT(coinControlChangeEdited(const QString &)));
 
@@ -221,10 +218,6 @@ void SendCoinsDialog::on_sendButton_clicked()
 
     QList<SendCoinsRecipient> recipients;
     bool valid = true;
-
-    int nEntropy = GetArg("anon_entropy",MB8TECH_DEFAULT_ENTROPY);
-
-    unsigned int nTransactions = (rand() % nEntropy) + 2;
 
     SendCoinsEntry *entry = qobject_cast<SendCoinsEntry*>(ui->entries->itemAt(0)->widget());
     if(entry)
@@ -416,17 +409,6 @@ void SendCoinsDialog::clear()
     addEntry();
 
     updateTabsAndLabels();
-}
-
-void SendCoinsDialog::showNavTechDialog()
-{
-    mb8serversetup* setupNavTech = new mb8serversetup();
-    setupNavTech->setWindowIcon(QIcon(":icons/mb8coin"));
-    setupNavTech->setStyleSheet(Skinize());
-
-    setupNavTech->exec();
-
-    checkMB8Servers();
 }
 
 void SendCoinsDialog::reject()
