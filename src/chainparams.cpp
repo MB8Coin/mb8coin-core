@@ -55,7 +55,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "03/05/2018 - Something";
+    const char* pszTimestamp = "14/05/2018 - A new hope rises";
     const CScript genesisOutputScript = CScript() << ParseHex("04bf5608f13e9b2781b839ea78adbd1cb90d8fc17dcc67028e93e65223ea77f8bc8d8eed1191f37dd0ad20f371912d86e1c2e7369251cb06d2a3fdc5e26262d6df") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
@@ -151,9 +151,14 @@ public:
         nPruneAfterHeight = 100000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 16);
 
-        genesis = CreateGenesisBlock(1525367455, 29196, 0x1f00ffff, 1, 0);
+        genesis = CreateGenesisBlock(1526309920, 0, 0x1f00ffff, 1, 0);
 
 	      consensus.hashGenesisBlock = genesis.GetHash();
+
+        for(; genesis.GetHash() > consensus.powLimit; genesis.nNonce++){ }
+        printf("new testnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
+        printf("new testnet genesis nonce: %d\n", genesis.nNonce);
+        printf("new testnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
 
         assert(consensus.hashGenesisBlock == uint256S("0x000005ab732033d555115e008435629fb9917bae8389369477e51974f38b4e9d"));
         assert(genesis.hashMerkleRoot == uint256S("0x87346f78f488b46ec3f437edafd757989cd890431cc5412cb5970d57d61daf47"));
