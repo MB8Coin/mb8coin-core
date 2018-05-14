@@ -4281,13 +4281,13 @@ bool IsWitnessLocked(const CBlockIndex* pindexPrev, const Consensus::Params& par
 bool IsCommunityFundEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)
 {
     LOCK(cs_main);
-    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_COMMUNITYFUND, versionbitscache) == THRESHOLD_ACTIVE);
+    return false;
 }
 
 bool IsCommunityFundLocked(const CBlockIndex* pindexPrev, const Consensus::Params& params)
 {
     LOCK(cs_main);
-    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_COMMUNITYFUND, versionbitscache) == THRESHOLD_LOCKED_IN);
+    return false;
 }
 
 // Compute at which vout of the block's coinbase transaction the witness
@@ -8268,21 +8268,15 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
 // staker's coin stake reward based on coin age spent (coin-days)
 int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlockIndex* pindexPrev)
 {
-    int64_t nRewardCoinYear;
-    nRewardCoinYear = MAX_MINT_PROOF_OF_STAKE;
+    int64_t nRewardCoinBlock;
 
-    if(nHeight-1 < 7 * Params().GetConsensus().nDailyBlockCount)
-        nRewardCoinYear = 1 * MAX_MINT_PROOF_OF_STAKE;
-    else if(nHeight-1 < (365 * Params().GetConsensus().nDailyBlockCount))
-        nRewardCoinYear = 0.5 * MAX_MINT_PROOF_OF_STAKE;
-    else if(nHeight-1 < (730 * Params().GetConsensus().nDailyBlockCount))
-        nRewardCoinYear = 0.5 * MAX_MINT_PROOF_OF_STAKE;
-    else if(IsCommunityFundEnabled(pindexPrev, Params().GetConsensus()))
-        nRewardCoinYear = 0.4 * MAX_MINT_PROOF_OF_STAKE;
-    else
-        nRewardCoinYear = 0.5 * MAX_MINT_PROOF_OF_STAKE;
+    if(nHeight - 1 < 30 * 8 * Params().GetConsensus().nDailyBlockCount) {
+        nRewardCoinBlock = 380;
+    } else {
+        nRewardCoinBlock = 190;
+    }
 
-    int64_t nSubsidy = nCoinAge * nRewardCoinYear / 365;
+    int64_t nSubsidy = nRewardCoinBlock * COIN;
 
     return  nSubsidy + nFees;
 }
