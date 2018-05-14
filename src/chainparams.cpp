@@ -151,17 +151,12 @@ public:
         nPruneAfterHeight = 100000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 16);
 
-        genesis = CreateGenesisBlock(1526309920, 0, 0x1f00ffff, 1, 0);
+        genesis = CreateGenesisBlock(1526309920, 9999, 0x1f00ffff, 1, 0);
 
 	      consensus.hashGenesisBlock = genesis.GetHash();
 
-        for(; genesis.GetHash() > consensus.powLimit; genesis.nNonce++){ }
-        printf("new testnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
-        printf("new testnet genesis nonce: %d\n", genesis.nNonce);
-        printf("new testnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
-
-        assert(consensus.hashGenesisBlock == uint256S("0x000005ab732033d555115e008435629fb9917bae8389369477e51974f38b4e9d"));
-        assert(genesis.hashMerkleRoot == uint256S("0x87346f78f488b46ec3f437edafd757989cd890431cc5412cb5970d57d61daf47"));
+        assert(consensus.hashGenesisBlock == uint256S("0x0000fa3dbbe6d00b4a921c2e44b2a9234bf6239d5004f80e94798adb159ea598"));
+        assert(genesis.hashMerkleRoot == uint256S("0x226916092368fd781ed89524a0bd9f6be86d7b043ff44f08c6e0936c79ade33d"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,85);
