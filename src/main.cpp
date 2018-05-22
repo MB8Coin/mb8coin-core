@@ -4132,7 +4132,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const 
 {
     // Check proof of work matches claimed amount
     CBlockIndex pblock = CBlockIndex(block);
-    if (pblock.IsProofOfWork())
+    if (pblock.IsProofOfWork() && mapBlockIndex.size() <= consensusParams.nLastPOWBlock)
         if (!CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
             return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
 

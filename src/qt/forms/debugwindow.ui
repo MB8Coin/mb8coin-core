@@ -669,7 +669,7 @@
            <item>
             <widget class="QPushButton" name="btnClearTrafficGraph">
              <property name="styleSheet">
-              <string notr="true"> background: #f6f6f6; border: 2px solid #a9adc4; border-radius: 5px; padding: 6px; text-transform: uppercase; color: #616998; font-weight: bold</string>
+              <string notr="true"> background: #f6f6f6; border: 2px solid #a9adc4; border-radius: 5px; padding: 6px; text-transform: uppercase; color: #0343f6; font-weight: bold</string>
              </property>
              <property name="text">
               <string>&amp;Clear</string>

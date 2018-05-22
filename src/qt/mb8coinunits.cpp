@@ -28,9 +28,9 @@ QList<MB8CoinUnits::Unit> MB8CoinUnits::availableUnits()
     unitlist.append(MB8);
 //    unitlist.append(mMB8);
 //    unitlist.append(uMB8);
-    unitlist.append(BTC);
-    unitlist.append(EUR);
-    unitlist.append(USD);
+//    unitlist.append(BTC);
+//    unitlist.append(EUR);
+//    unitlist.append(USD);
     return unitlist;
 }
 
@@ -39,11 +39,11 @@ bool MB8CoinUnits::valid(int unit)
     switch(unit)
     {
     case MB8:
-//    case mMB8:
-//    case uMB8:
-    case BTC:
-    case EUR:
-    case USD:
+    case mMB8:
+    case uMB8:
+//    case BTC:
+//    case EUR:
+//    case USD:
         return true;
     default:
         return false;
@@ -55,11 +55,11 @@ QString MB8CoinUnits::name(int unit)
     switch(unit)
     {
     case MB8: return QString("MB8");
-//    case mMB8: return QString("mMB8");
-//    case uMB8: return QString::fromUtf8("μMB8");
-    case BTC: return QString::fromUtf8("BTC");
-    case EUR: return QString::fromUtf8("EUR");
-    case USD: return QString::fromUtf8("USD");
+    case mMB8: return QString("mMB8");
+    case uMB8: return QString::fromUtf8("μMB8");
+//    case BTC: return QString::fromUtf8("BTC");
+//    case EUR: return QString::fromUtf8("EUR");
+//    case USD: return QString::fromUtf8("USD");
     default: return QString("???");
     }
 }
@@ -69,11 +69,11 @@ QString MB8CoinUnits::description(int unit)
     switch(unit)
     {
     case MB8: return QString("MB8Coins");
-//    case mMB8: return QString("Milli-MB8Coins (1 / 1" THIN_SP_UTF8 "000)");
-//    case uMB8: return QString("Micro-MB8Coins (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    case BTC: return QString("BTC");
-    case EUR: return QString("Euro");
-    case USD: return QString("US Dolar");
+    case mMB8: return QString("Milli-MB8Coins (1 / 1" THIN_SP_UTF8 "000)");
+    case uMB8: return QString("Micro-MB8Coins (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+//    case BTC: return QString("BTC");
+//    case EUR: return QString("Euro");
+//    case USD: return QString("US Dollar");
     default: return QString("???");
     }
 }
@@ -86,8 +86,8 @@ qint64 MB8CoinUnits::factor(int unit)
     switch(unit)
     {
     case MB8:  return 100000000;
-//    case mMB8: return 100000;
-//    case uMB8: return 100;
+    case mMB8: return 100000;
+    case uMB8: return 100;
     case BTC:  return settings.value("btcFactor", 0).toFloat();
     case EUR:  return settings.value("eurFactor", 0).toFloat();
     case USD:  return settings.value("usdFactor", 0).toFloat();
@@ -100,8 +100,8 @@ int MB8CoinUnits::decimals(int unit)
     switch(unit)
     {
     case MB8: return 8;
-//    case mMB8: return 5;
-//    case uMB8: return 2;
+    case mMB8: return 5;
+    case uMB8: return 2;
     case BTC: return 8;
     case EUR: return 6;
     case USD: return 6;

@@ -224,7 +224,8 @@ MB8CoinAmountField::MB8CoinAmountField(QWidget *parent) :
 void MB8CoinAmountField::clear()
 {
     amount->clear();
-    unit->setText("0 EUR / 0 USD / 0 BTC");
+    //unit->setText("0 EUR / 0 USD / 0 BTC");
+    unit->setText("");
 }
 
 void MB8CoinAmountField::setEnabled(bool fEnabled)
@@ -278,8 +279,9 @@ void MB8CoinAmountField::setValue(const CAmount& value)
 void MB8CoinAmountField::valueDidChange()
 {
     QSettings settings;
-    bool valid;
-    unit->setText(QString("%1 EUR / ").arg(value(&valid) / settings.value("eurFactor", 0).toFloat()).append("%2 USD / ").arg(value(&valid) / settings.value("usdFactor", 0).toFloat()).append("%3 BTC").arg(value(&valid) / settings.value("btcFactor", 0).toFloat()));
+    //bool valid;
+    unit->setText("");
+    //unit->setText(QString("%1 EUR / ").arg(value(&valid) / settings.value("eurFactor", 0).toFloat()).append("%2 USD / ").arg(value(&valid) / settings.value("usdFactor", 0).toFloat()).append("%3 BTC").arg(value(&valid) / settings.value("btcFactor", 0).toFloat()));
 }
 
 void MB8CoinAmountField::setReadOnly(bool fReadOnly)

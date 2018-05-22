@@ -1076,7 +1076,7 @@ void MB8CoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
         const int YEAR_IN_SECONDS = 31556952; // Average length of year in Gregorian calendar
 
         if(walletFrame)
-            walletFrame->setStatusTitle(tr("Connecting to MB8Coin network..."));
+            walletFrame->setStatusTitle(tr("Connected to MB8Coin network..."));
 
         if(secs < 2*DAY_IN_SECONDS)
         {
