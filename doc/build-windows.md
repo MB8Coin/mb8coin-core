@@ -66,6 +66,24 @@ To build executables for Windows 64-bit:
 
 For further documentation on the depends system see [README.md](../depends/README.md) in the depends directory.
 
+Building Deployment
+-------------------
+To build a setup.exe bundle, make sure you have nsis installed.
+
+    sudo apt-get install nsis
+
+Then reload the configuration and build
+
+To build for Windows 32-bit:
+
+    ./configure --prefix=`pwd`/depends/i686-w64-mingw32
+    make deploy
+
+To build for Windows 64-bit:
+
+    ./configure --prefix=`pwd`/depends/x86_64-w64-mingw32
+    make deploy
+
 Footnotes
 ---------
 
