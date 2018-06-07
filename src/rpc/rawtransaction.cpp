@@ -1060,15 +1060,15 @@ UniValue sendrawtransaction(const JSONRPCRequest &request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafeMode argNames
   //  --------------------- ------------------------  -----------------------  ---------- --------
-    { "rawtransactions",    "getrawtransaction",      &getrawtransaction,      true, {}  },
-    { "rawtransactions",    "createrawtransaction",   &createrawtransaction,   true, {}  },
-    { "rawtransactions",    "decoderawtransaction",   &decoderawtransaction,   true, {}  },
-    { "rawtransactions",    "decodescript",           &decodescript,           true, {}  },
-    { "rawtransactions",    "sendrawtransaction",     &sendrawtransaction,     false, {} },
-    { "rawtransactions",    "signrawtransaction",     &signrawtransaction,     false, {} }, /* uses wallet if enabled */
+    { "rawtransactions",    "getrawtransaction",      &getrawtransaction,      true, {"txid","verbose","blockhash"}  },
+    { "rawtransactions",    "createrawtransaction",   &createrawtransaction,   true, {"inputs","outputs","locktime","replaceable"}  },
+    { "rawtransactions",    "decoderawtransaction",   &decoderawtransaction,   true, {"hexstring","iswitness"}  },
+    { "rawtransactions",    "decodescript",           &decodescript,           true, {"hexstring"}  },
+    { "rawtransactions",    "sendrawtransaction",     &sendrawtransaction,     false, {"hexstring","allowhighfees"} },
+    { "rawtransactions",    "signrawtransaction",     &signrawtransaction,     false, {"hexstring","prevtxs","privkeys","sighashtype"} }, /* uses wallet if enabled */
 
-    { "blockchain",         "gettxoutproof",          &gettxoutproof,          true, {}  },
-    { "blockchain",         "verifytxoutproof",       &verifytxoutproof,       true, {}  },
+    { "blockchain",         "gettxoutproof",          &gettxoutproof,          true, {"txids", "blockhash"}  },
+    { "blockchain",         "verifytxoutproof",       &verifytxoutproof,       true, {"proof"}  },
 };
 
 void RegisterRawTransactionRPCCommands(CRPCTable &tableRPC)
