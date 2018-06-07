@@ -923,18 +923,18 @@ UniValue estimatesmartpriority(const JSONRPCRequest &request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafeMode argNames
   //  --------------------- ------------------------  -----------------------  ---------- --------
-    { "mining",             "getnetworkhashps",       &getnetworkhashps,       true, {}  },
+    { "mining",             "getnetworkhashps",       &getnetworkhashps,       true, { "nblocks", "height"}  },
     { "mining",             "getmininginfo",          &getmininginfo,          true, {}  },
-    { "mining",             "prioritisetransaction",  &prioritisetransaction,  true, {}  },
-    { "mining",             "getblocktemplate",       &getblocktemplate,       true, {}  },
-    { "mining",             "submitblock",            &submitblock,            true, {}  },
+    { "mining",             "prioritisetransaction",  &prioritisetransaction,  true, {"txid","dummy","fee_delta"}  },
+    { "mining",             "getblocktemplate",       &getblocktemplate,       true, {"template_request"}  },
+    { "mining",             "submitblock",            &submitblock,            true, {"hexdata","dummy"}  },
 
     { "generating",         "generate",               &generate,               true, {}  },
-    { "generating",         "generatetoaddress",      &generatetoaddress,      true, {}  },
+    { "generating",         "generatetoaddress",      &generatetoaddress,      true, {"nblocks", "address", "maxtries"}  },
 
     { "util",               "estimatefee",            &estimatefee,            true, {}  },
     { "util",               "estimatepriority",       &estimatepriority,       true, {}  },
-    { "util",               "estimatesmartfee",       &estimatesmartfee,       true, {}  },
+    { "util",               "estimatesmartfee",       &estimatesmartfee,       true, {"conf_target", "estimate_mode"}  },
     { "util",               "estimatesmartpriority",  &estimatesmartpriority,  true, {}  },
 };
 
