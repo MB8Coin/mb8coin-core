@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
+// Copyright (c) 2018 The MB8Coin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -101,6 +102,8 @@ namespace boost {
 } // namespace boost
 
 using namespace std;
+
+const int64_t nStartupTime = GetTime();
 
 const char * const MB8COIN_CONF_FILENAME = "mb8coin.conf";
 const char * const MB8COIN_PID_FILENAME = "mb8coin.pid";
@@ -967,3 +970,8 @@ void SetThreadPriority(int nPriority)
 #endif
 #endif
 }
+
+int64_t GetStartupTime() {
+    return nStartupTime;
+}
+

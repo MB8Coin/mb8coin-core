@@ -33,6 +33,9 @@ static const bool DEFAULT_LOGTIMEMICROS = false;
 static const bool DEFAULT_LOGIPS        = false;
 static const bool DEFAULT_LOGTIMESTAMPS = true;
 
+// Application startup time (used for uptime calculation)
+int64_t GetStartupTime();
+
 /** Signals for translation. */
 class CTranslationInterface
 {

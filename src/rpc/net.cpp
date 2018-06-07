@@ -24,9 +24,9 @@
 
 using namespace std;
 
-UniValue getconnectioncount(const UniValue& params, bool fHelp)
+UniValue getconnectioncount(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "getconnectioncount\n"
             "\nReturns the number of connections to other nodes.\n"
@@ -42,9 +42,9 @@ UniValue getconnectioncount(const UniValue& params, bool fHelp)
     return (int)vNodes.size();
 }
 
-UniValue ping(const UniValue& params, bool fHelp)
+UniValue ping(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "ping\n"
             "\nRequests that a ping be sent to all other nodes, to measure ping time.\n"
@@ -78,9 +78,9 @@ static void CopyNodeStats(std::vector<CNodeStats>& vstats)
     }
 }
 
-UniValue getpeerinfo(const UniValue& params, bool fHelp)
+UniValue getpeerinfo(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "getpeerinfo\n"
             "\nReturns data about each connected network node as a json array of objects.\n"
@@ -196,12 +196,12 @@ UniValue getpeerinfo(const UniValue& params, bool fHelp)
     return ret;
 }
 
-UniValue addnode(const UniValue& params, bool fHelp)
+UniValue addnode(const JSONRPCRequest &request)
 {
     string strCommand;
-    if (params.size() == 2)
-        strCommand = params[1].get_str();
-    if (fHelp || params.size() != 2 ||
+    if (request.params.size() == 2)
+        strCommand = request.params[1].get_str();
+    if (request.fHelp || request.params.size() != 2 ||
         (strCommand != "onetry" && strCommand != "add" && strCommand != "remove"))
         throw runtime_error(
             "addnode \"node\" \"add|remove|onetry\"\n"
@@ -215,7 +215,7 @@ UniValue addnode(const UniValue& params, bool fHelp)
             + HelpExampleRpc("addnode", "\"192.168.0.6:5556\", \"onetry\"")
         );
 
-    string strNode = params[0].get_str();
+    string strNode = request.params[0].get_str();
 
     if (strCommand == "onetry")
     {
@@ -246,9 +246,9 @@ UniValue addnode(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue disconnectnode(const UniValue& params, bool fHelp)
+UniValue disconnectnode(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "disconnectnode \"node\" \n"
             "\nImmediately disconnects from the specified node.\n"
@@ -259,7 +259,7 @@ UniValue disconnectnode(const UniValue& params, bool fHelp)
             + HelpExampleRpc("disconnectnode", "\"192.168.0.6:5556\"")
         );
 
-    CNode* pNode = FindNode(params[0].get_str());
+    CNode* pNode = FindNode(request.params[0].get_str());
     if (pNode == NULL)
         throw JSONRPCError(RPC_CLIENT_NODE_NOT_CONNECTED, "Node not found in connected nodes");
 
@@ -268,9 +268,9 @@ UniValue disconnectnode(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue getaddednodeinfo(const UniValue& params, bool fHelp)
+UniValue getaddednodeinfo(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() < 1 || params.size() > 2)
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw runtime_error(
             "getaddednodeinfo dummy ( \"node\" )\n"
             "\nReturns information about the given added node, or all added nodes\n"
@@ -300,10 +300,10 @@ UniValue getaddednodeinfo(const UniValue& params, bool fHelp)
 
     std::vector<AddedNodeInfo> vInfo = GetAddedNodeInfo();
 
-    if (params.size() == 2) {
+    if (request.params.size() == 2) {
         bool found = false;
         for (const AddedNodeInfo& info : vInfo) {
-            if (info.strAddedNode == params[1].get_str()) {
+            if (info.strAddedNode == request.params[1].get_str()) {
                 vInfo.assign(1, info);
                 found = true;
                 break;
@@ -334,12 +334,12 @@ UniValue getaddednodeinfo(const UniValue& params, bool fHelp)
     return ret;
 }
 
-UniValue addanonserver(const UniValue& params, bool fHelp)
+UniValue addanonserver(const JSONRPCRequest &request)
 {
     string strCommand;
-    if (params.size() >= 2)
-        strCommand = params[1].get_str();
-    if (fHelp || params.size() > 3 ||
+    if (request.params.size() >= 2)
+        strCommand = request.params[1].get_str();
+    if (request.fHelp || request.params.size() > 3 ||
         (strCommand != "add" && strCommand != "remove"))
         throw runtime_error(
             "addanonserver \"node\" \"add|remove\"\n"
@@ -355,7 +355,7 @@ UniValue addanonserver(const UniValue& params, bool fHelp)
             + HelpExampleRpc("addanonserver", "\"192.168.0.6:3000\", \"remove\", true")
         );
 
-    string strNode = params[0].get_str();
+    string strNode = request.params[0].get_str();
 
     LOCK(cs_vAddedAnonServers);
     vector<string>::iterator it = vAddedAnonServers.begin();
@@ -365,7 +365,7 @@ UniValue addanonserver(const UniValue& params, bool fHelp)
 
     if (strCommand == "add")
     {
-      if (params.size() == 3 && params[2].get_str() == "true") {
+      if (request.params.size() == 3 && request.params[2].get_str() == "true") {
         WriteConfigFile("addanonserver", strNode);
         if (it == vAddedAnonServers.end())
           vAddedAnonServers.push_back(strNode);
@@ -377,7 +377,7 @@ UniValue addanonserver(const UniValue& params, bool fHelp)
     }
     else if(strCommand == "remove")
     {
-      if (params.size() == 3 && params[2].get_str() == "true") {
+      if (request.params.size() == 3 && request.params[2].get_str() == "true") {
         RemoveConfigFile("addanonserver", strNode);
         if (it != vAddedAnonServers.end())
           vAddedAnonServers.erase(it);
@@ -390,9 +390,9 @@ UniValue addanonserver(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue getnettotals(const UniValue& params, bool fHelp)
+UniValue getnettotals(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() > 0)
+    if (request.fHelp || request.params.size() > 0)
         throw runtime_error(
             "getnettotals\n"
             "\nReturns information about network traffic, including bytes in, bytes out,\n"
@@ -454,9 +454,9 @@ static UniValue GetNetworksInfo()
     return networks;
 }
 
-UniValue getnetworkinfo(const UniValue& params, bool fHelp)
+UniValue getnetworkinfo(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "getnetworkinfo\n"
             "Returns an object containing various state info regarding P2P networking.\n"
@@ -523,12 +523,12 @@ UniValue getnetworkinfo(const UniValue& params, bool fHelp)
     return obj;
 }
 
-UniValue setban(const UniValue& params, bool fHelp)
+UniValue setban(const JSONRPCRequest &request)
 {
     string strCommand;
-    if (params.size() >= 2)
-        strCommand = params[1].get_str();
-    if (fHelp || params.size() < 2 ||
+    if (request.params.size() >= 2)
+        strCommand = request.params[1].get_str();
+    if (request.fHelp || request.params.size() < 2 ||
         (strCommand != "add" && strCommand != "remove"))
         throw runtime_error(
                             "setban \"ip(/netmask)\" \"add|remove\" (bantime) (absolute)\n"
@@ -548,13 +548,13 @@ UniValue setban(const UniValue& params, bool fHelp)
     CNetAddr netAddr;
     bool isSubnet = false;
 
-    if (params[0].get_str().find("/") != string::npos)
+    if (request.params[0].get_str().find("/") != string::npos)
         isSubnet = true;
 
     if (!isSubnet)
-        netAddr = CNetAddr(params[0].get_str());
+        netAddr = CNetAddr(request.params[0].get_str());
     else
-        subNet = CSubNet(params[0].get_str());
+        subNet = CSubNet(request.params[0].get_str());
 
     if (! (isSubnet ? subNet.IsValid() : netAddr.IsValid()) )
         throw JSONRPCError(RPC_CLIENT_NODE_ALREADY_ADDED, "Error: Invalid IP/Subnet");
@@ -565,11 +565,11 @@ UniValue setban(const UniValue& params, bool fHelp)
             throw JSONRPCError(RPC_CLIENT_NODE_ALREADY_ADDED, "Error: IP/Subnet already banned");
 
         int64_t banTime = 0; //use standard bantime if not specified
-        if (params.size() >= 3 && !params[2].isNull())
-            banTime = params[2].get_int64();
+        if (request.params.size() >= 3 && !request.params[2].isNull())
+            banTime = request.params[2].get_int64();
 
         bool absolute = false;
-        if (params.size() == 4 && params[3].isTrue())
+        if (request.params.size() == 4 && request.params[3].isTrue())
             absolute = true;
 
         isSubnet ? CNode::Ban(subNet, BanReasonManuallyAdded, banTime, absolute) : CNode::Ban(netAddr, BanReasonManuallyAdded, banTime, absolute);
@@ -582,9 +582,9 @@ UniValue setban(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue listbanned(const UniValue& params, bool fHelp)
+UniValue listbanned(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
                             "listbanned\n"
                             "\nList all banned IPs/Subnets.\n"
@@ -612,9 +612,9 @@ UniValue listbanned(const UniValue& params, bool fHelp)
     return bannedAddresses;
 }
 
-UniValue clearbanned(const UniValue& params, bool fHelp)
+UniValue clearbanned(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
                             "clearbanned\n"
                             "\nClear all banned IPs.\n"
@@ -628,9 +628,9 @@ UniValue clearbanned(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue getstakinginfo(const UniValue& params, bool fHelp)
+UniValue getstakinginfo(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "getstakinginfo\n"
             "Returns an object containing staking-related information.");
@@ -663,7 +663,7 @@ UniValue getstakinginfo(const UniValue& params, bool fHelp)
     return obj;
 }
 
-UniValue listanonservers(const UniValue& params, bool fHelp)
+UniValue listanonservers(const JSONRPCRequest &request)
 {
   UniValue obj(UniValue::VARR);
 
@@ -674,14 +674,14 @@ UniValue listanonservers(const UniValue& params, bool fHelp)
   return obj;
 }
 
-UniValue getstakesubsidy(const UniValue& params, bool fHelp)
+UniValue getstakesubsidy(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "getstakesubsidy <hex string>\n"
             "Returns proof-of-stake subsidy value for the specified coinstake.");
 
-    vector<unsigned char> txData(ParseHex(params[0].get_str()));
+    vector<unsigned char> txData(ParseHex(request.params[0].get_str()));
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
     CTransaction tx;
     try {
@@ -699,23 +699,23 @@ UniValue getstakesubsidy(const UniValue& params, bool fHelp)
 }
 
 static const CRPCCommand commands[] =
-{ //  category              name                      actor (function)         okSafeMode
-  //  --------------------- ------------------------  -----------------------  ----------
-    { "network",            "getconnectioncount",     &getconnectioncount,     true  },
-    { "network",            "getstakesubsidy",        &getstakesubsidy,        true  },
-    { "network",            "getstakinginfo",         &getstakinginfo,         true  },
-    { "network",            "ping",                   &ping,                   true  },
-    { "network",            "getpeerinfo",            &getpeerinfo,            true  },
-    { "network",            "addnode",                &addnode,                true  },
-    { "network",            "addanonserver",          &addanonserver,          true  },
-    { "network",            "disconnectnode",         &disconnectnode,         true  },
-    { "network",            "getaddednodeinfo",       &getaddednodeinfo,       true  },
-    { "network",            "getnettotals",           &getnettotals,           true  },
-    { "network",            "getnetworkinfo",         &getnetworkinfo,         true  },
-    { "network",            "setban",                 &setban,                 true  },
-    { "network",            "listbanned",             &listbanned,             true  },
-    { "network",            "listanonservers",        &listanonservers,        true  },
-    { "network",            "clearbanned",            &clearbanned,            true  },
+{ //  category              name                      actor (function)         okSafeMode argNames
+  //  --------------------- ------------------------  -----------------------  ---------- --------
+    { "network",            "getconnectioncount",     &getconnectioncount,     true, {}  },
+    { "network",            "getstakesubsidy",        &getstakesubsidy,        true, {}  },
+    { "network",            "getstakinginfo",         &getstakinginfo,         true, {}  },
+    { "network",            "ping",                   &ping,                   true, {}  },
+    { "network",            "getpeerinfo",            &getpeerinfo,            true, {}  },
+    { "network",            "addnode",                &addnode,                true, {}  },
+    { "network",            "addanonserver",          &addanonserver,          true, {}  },
+    { "network",            "disconnectnode",         &disconnectnode,         true, {}  },
+    { "network",            "getaddednodeinfo",       &getaddednodeinfo,       true, {}  },
+    { "network",            "getnettotals",           &getnettotals,           true, {}  },
+    { "network",            "getnetworkinfo",         &getnetworkinfo,         true, {}  },
+    { "network",            "setban",                 &setban,                 true, {}  },
+    { "network",            "listbanned",             &listbanned,             true, {}  },
+    { "network",            "listanonservers",        &listanonservers,        true, {}  },
+    { "network",            "clearbanned",            &clearbanned,            true, {}  },
 };
 
 void RegisterNetRPCCommands(CRPCTable &tableRPC)

@@ -41,9 +41,9 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
-UniValue getinfo(const UniValue& params, bool fHelp)
+UniValue getinfo(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 0)
+    if (request.fHelp || request.params.size() != 0)
         throw runtime_error(
             "getinfo\n"
             "Returns an object containing various state info.\n"
@@ -155,9 +155,9 @@ public:
 };
 #endif
 
-UniValue validateaddress(const UniValue& params, bool fHelp)
+UniValue validateaddress(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "validateaddress \"mb8coinaddress\"\n"
             "\nReturn information about the given mb8coin address.\n"
@@ -188,15 +188,15 @@ UniValue validateaddress(const UniValue& params, bool fHelp)
     LOCK(cs_main);
 #endif
 
-    string address_str = params[0].get_str();
+    string address_str = request.params[0].get_str();
 
 #ifdef HAVE_UNBOUND
     utils::DNSResolver *DNS = nullptr;
     bool dnssec_valid;
 
-    if(DNS->check_address_syntax(params[0].get_str().c_str()))
+    if(DNS->check_address_syntax(request.params[0].get_str().c_str()))
     {
-        std::vector<std::string> addresses = utils::dns_utils::addresses_from_url(params[0].get_str().c_str(), dnssec_valid);
+        std::vector<std::string> addresses = utils::dns_utils::addresses_from_url(request.params[0].get_str().c_str(), dnssec_valid);
 
         if(addresses.empty())
           throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid OpenAlias address");
@@ -221,7 +221,7 @@ UniValue validateaddress(const UniValue& params, bool fHelp)
         string currentAddress = address.ToString();
         ret.push_back(Pair("address", currentAddress));
 #ifdef HAVE_UNBOUND
-        if(DNS->check_address_syntax(params[0].get_str().c_str()))
+        if(DNS->check_address_syntax(request.params[0].get_str().c_str()))
             ret.push_back(Pair("dnssec", dnssec_valid));
 #endif
 
@@ -250,10 +250,10 @@ UniValue validateaddress(const UniValue& params, bool fHelp)
 /**
  * Used by addmultisigaddress / createmultisig:
  */
-CScript _createmultisig_redeemScript(const UniValue& params)
+CScript _createmultisig_redeemScript(const JSONRPCRequest &request)
 {
-    int nRequired = params[0].get_int();
-    const UniValue& keys = params[1].get_array();
+    int nRequired = request.params[0].get_int();
+    const UniValue& keys = request.params[1].get_array();
 
     // Gather public keys
     if (nRequired < 1)
@@ -311,9 +311,9 @@ CScript _createmultisig_redeemScript(const UniValue& params)
     return result;
 }
 
-UniValue createmultisig(const UniValue& params, bool fHelp)
+UniValue createmultisig(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() < 2 || params.size() > 2)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 2)
     {
         string msg = "createmultisig nrequired [\"key\",...]\n"
             "\nCreates a multi-signature address with n signature of m keys required.\n"
@@ -343,7 +343,7 @@ UniValue createmultisig(const UniValue& params, bool fHelp)
     }
 
     // Construct using pay-to-script-hash:
-    CScript inner = _createmultisig_redeemScript(params);
+    CScript inner = _createmultisig_redeemScript(request);
     CScriptID innerID(inner);
     CMB8CoinAddress address(innerID);
 
@@ -354,9 +354,9 @@ UniValue createmultisig(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue createwitnessaddress(const UniValue& params, bool fHelp)
+UniValue createwitnessaddress(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() < 1 || params.size() > 1)
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 1)
     {
         string msg = "createwitnessaddress \"script\"\n"
             "\nCreates a witness address for a particular script.\n"
@@ -374,11 +374,11 @@ UniValue createwitnessaddress(const UniValue& params, bool fHelp)
         throw runtime_error(msg);
     }
 
-    if (!IsHex(params[0].get_str())) {
+    if (!IsHex(request.params[0].get_str())) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Script must be hex-encoded");
     }
 
-    std::vector<unsigned char> code = ParseHex(params[0].get_str());
+    std::vector<unsigned char> code = ParseHex(request.params[0].get_str());
     CScript script(code.begin(), code.end());
     CScript witscript = GetScriptForWitness(script);
     CScriptID witscriptid(witscript);
@@ -391,9 +391,9 @@ UniValue createwitnessaddress(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue verifymessage(const UniValue& params, bool fHelp)
+UniValue verifymessage(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 3)
+    if (request.fHelp || request.params.size() != 3)
         throw runtime_error(
             "verifymessage \"mb8coinaddress\" \"signature\" \"message\"\n"
             "\nVerify a signed message\n"
@@ -416,9 +416,9 @@ UniValue verifymessage(const UniValue& params, bool fHelp)
 
     LOCK(cs_main);
 
-    string strAddress  = params[0].get_str();
-    string strSign     = params[1].get_str();
-    string strMessage  = params[2].get_str();
+    string strAddress  = request.params[0].get_str();
+    string strSign     = request.params[1].get_str();
+    string strMessage  = request.params[2].get_str();
 
     CMB8CoinAddress addr(strAddress);
     if (!addr.IsValid())
@@ -445,9 +445,9 @@ UniValue verifymessage(const UniValue& params, bool fHelp)
     return (pubkey.GetID() == keyID);
 }
 
-UniValue signmessagewithprivkey(const UniValue& params, bool fHelp)
+UniValue signmessagewithprivkey(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 2)
+    if (request.fHelp || request.params.size() != 2)
         throw runtime_error(
             "signmessagewithprivkey \"privkey\" \"message\"\n"
             "\nSign a message with the private key of an address\n"
@@ -465,8 +465,8 @@ UniValue signmessagewithprivkey(const UniValue& params, bool fHelp)
             + HelpExampleRpc("signmessagewithprivkey", "\"privkey\", \"my message\"")
         );
 
-    string strPrivkey = params[0].get_str();
-    string strMessage = params[1].get_str();
+    string strPrivkey = request.params[0].get_str();
+    string strMessage = request.params[1].get_str();
 
     CMB8CoinSecret vchSecret;
     bool fGood = vchSecret.SetString(strPrivkey);
@@ -487,9 +487,9 @@ UniValue signmessagewithprivkey(const UniValue& params, bool fHelp)
     return EncodeBase64(&vchSig[0], vchSig.size());
 }
 
-UniValue setmocktime(const UniValue& params, bool fHelp)
+UniValue setmocktime(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "setmocktime timestamp\n"
             "\nSet the local time to given timestamp (-regtest only)\n"
@@ -507,8 +507,8 @@ UniValue setmocktime(const UniValue& params, bool fHelp)
     // in a long time.
     LOCK2(cs_main, cs_vNodes);
 
-    RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM));
-    SetMockTime(params[0].get_int64());
+    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
+    SetMockTime(request.params[0].get_int64());
 
     uint64_t t = GetTime();
     BOOST_FOREACH(CNode* pnode, vNodes) {
@@ -530,19 +530,19 @@ bool getAddressFromIndex(const int &type, const uint160 &hash, std::string &addr
     return true;
 }
 
-bool getAddressesFromParams(const UniValue& params, std::vector<std::pair<uint160, int> > &addresses)
-{
-    if (params[0].isStr()) {
-        CMB8CoinAddress address(params[0].get_str());
+bool getAddressesFromRequest(const JSONRPCRequest &request,
+    std::vector<std::pair<uint160, int> > &addresses) {
+    if (request.params[0].isStr()) {
+        CMB8CoinAddress address(request.params[0].get_str());
         uint160 hashBytes;
         int type = 0;
         if (!address.GetIndexKey(hashBytes, type)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
         }
         addresses.push_back(std::make_pair(hashBytes, type));
-    } else if (params[0].isObject()) {
+    } else if (request.params[0].isObject()) {
 
-        UniValue addressValues = find_value(params[0].get_obj(), "addresses");
+        UniValue addressValues = find_value(request.params[0].get_obj(), "addresses");
         if (!addressValues.isArray()) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Addresses is expected to be an array");
         }
@@ -576,9 +576,9 @@ bool timestampSort(std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> a,
     return a.second.time < b.second.time;
 }
 
-UniValue getaddressmempool(const UniValue& params, bool fHelp)
+UniValue getaddressmempool(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "getaddressmempool\n"
             "\nReturns all mempool deltas for an address (requires addressindex to be enabled).\n"
@@ -609,7 +609,7 @@ UniValue getaddressmempool(const UniValue& params, bool fHelp)
 
     std::vector<std::pair<uint160, int> > addresses;
 
-    if (!getAddressesFromParams(params, addresses)) {
+    if (!getAddressesFromRequest(request, addresses)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 
@@ -647,9 +647,9 @@ UniValue getaddressmempool(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue getaddressutxos(const UniValue& params, bool fHelp)
+UniValue getaddressutxos(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "getaddressutxos\n"
             "\nReturns all unspent outputs for an address (requires addressindex to be enabled).\n"
@@ -679,8 +679,8 @@ UniValue getaddressutxos(const UniValue& params, bool fHelp)
             );
 
     bool includeChainInfo = false;
-    if (params[0].isObject()) {
-        UniValue chainInfo = find_value(params[0].get_obj(), "chainInfo");
+    if (request.params[0].isObject()) {
+        UniValue chainInfo = find_value(request.params[0].get_obj(), "chainInfo");
         if (chainInfo.isBool()) {
             includeChainInfo = chainInfo.get_bool();
         }
@@ -688,7 +688,7 @@ UniValue getaddressutxos(const UniValue& params, bool fHelp)
 
     std::vector<std::pair<uint160, int> > addresses;
 
-    if (!getAddressesFromParams(params, addresses)) {
+    if (!getAddressesFromRequest(request, addresses)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 
@@ -733,9 +733,9 @@ UniValue getaddressutxos(const UniValue& params, bool fHelp)
     }
 }
 
-UniValue getaddressdeltas(const UniValue& params, bool fHelp)
+UniValue getaddressdeltas(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1 || !params[0].isObject())
+    if (request.fHelp || request.params.size() != 1 || !request.params[0].isObject())
         throw runtime_error(
             "getaddressdeltas\n"
             "\nReturns all changes for an address (requires addressindex to be enabled).\n"
@@ -766,10 +766,10 @@ UniValue getaddressdeltas(const UniValue& params, bool fHelp)
         );
 
 
-    UniValue startValue = find_value(params[0].get_obj(), "start");
-    UniValue endValue = find_value(params[0].get_obj(), "end");
+    UniValue startValue = find_value(request.params[0].get_obj(), "start");
+    UniValue endValue = find_value(request.params[0].get_obj(), "end");
 
-    UniValue chainInfo = find_value(params[0].get_obj(), "chainInfo");
+    UniValue chainInfo = find_value(request.params[0].get_obj(), "chainInfo");
     bool includeChainInfo = false;
     if (chainInfo.isBool()) {
         includeChainInfo = chainInfo.get_bool();
@@ -791,7 +791,7 @@ UniValue getaddressdeltas(const UniValue& params, bool fHelp)
 
     std::vector<std::pair<uint160, int> > addresses;
 
-    if (!getAddressesFromParams(params, addresses)) {
+    if (!getAddressesFromRequest(request, addresses)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 
@@ -858,9 +858,9 @@ UniValue getaddressdeltas(const UniValue& params, bool fHelp)
     }
 }
 
-UniValue getaddressbalance(const UniValue& params, bool fHelp)
+UniValue getaddressbalance(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "getaddressbalance\n"
             "\nReturns the balance for an address(es) (requires addressindex to be enabled).\n"
@@ -884,7 +884,7 @@ UniValue getaddressbalance(const UniValue& params, bool fHelp)
 
     std::vector<std::pair<uint160, int> > addresses;
 
-    if (!getAddressesFromParams(params, addresses)) {
+    if (!getAddressesFromRequest(request, addresses)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 
@@ -914,9 +914,9 @@ UniValue getaddressbalance(const UniValue& params, bool fHelp)
 
 }
 
-UniValue getaddresstxids(const UniValue& params, bool fHelp)
+UniValue getaddresstxids(const JSONRPCRequest &request)
 {
-    if (fHelp || params.size() != 1)
+    if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
             "getaddresstxids\n"
             "\nReturns the txids for an address(es) (requires addressindex to be enabled).\n"
@@ -942,15 +942,15 @@ UniValue getaddresstxids(const UniValue& params, bool fHelp)
 
     std::vector<std::pair<uint160, int> > addresses;
 
-    if (!getAddressesFromParams(params, addresses)) {
+    if (!getAddressesFromRequest(request, addresses)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 
     int start = 0;
     int end = 0;
-    if (params[0].isObject()) {
-        UniValue startValue = find_value(params[0].get_obj(), "start");
-        UniValue endValue = find_value(params[0].get_obj(), "end");
+    if (request.params[0].isObject()) {
+        UniValue startValue = find_value(request.params[0].get_obj(), "start");
+        UniValue endValue = find_value(request.params[0].get_obj(), "end");
         if (startValue.isNum() && endValue.isNum()) {
             start = startValue.get_int();
             end = endValue.get_int();
@@ -997,10 +997,10 @@ UniValue getaddresstxids(const UniValue& params, bool fHelp)
 
 }
 
-UniValue getspentinfo(const UniValue& params, bool fHelp)
+UniValue getspentinfo(const JSONRPCRequest &request)
 {
 
-    if (fHelp || params.size() != 1 || !params[0].isObject())
+    if (request.fHelp || request.params.size() != 1 || !request.params[0].isObject())
         throw runtime_error(
             "getspentinfo\n"
             "\nReturns the txid and index where an output is spent.\n"
@@ -1020,8 +1020,8 @@ UniValue getspentinfo(const UniValue& params, bool fHelp)
             + HelpExampleRpc("getspentinfo", "{\"txid\": \"0437cd7f8525ceed2324359c2d0ba26006d92d856a9c20fa0241106ee5a597c9\", \"index\": 0}")
         );
 
-    UniValue txidValue = find_value(params[0].get_obj(), "txid");
-    UniValue indexValue = find_value(params[0].get_obj(), "index");
+    UniValue txidValue = find_value(request.params[0].get_obj(), "txid");
+    UniValue indexValue = find_value(request.params[0].get_obj(), "index");
 
     if (!txidValue.isStr() || !indexValue.isNum()) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid txid or index");
@@ -1046,27 +1046,27 @@ UniValue getspentinfo(const UniValue& params, bool fHelp)
 }
 
 static const CRPCCommand commands[] =
-{ //  category              name                      actor (function)         okSafeMode
-  //  --------------------- ------------------------  -----------------------  ----------
-    { "control",            "getinfo",                &getinfo,                true  }, /* uses wallet if enabled */
-    { "util",               "validateaddress",        &validateaddress,        true  }, /* uses wallet if enabled */
-    { "util",               "createmultisig",         &createmultisig,         true  },
-    { "util",               "createwitnessaddress",   &createwitnessaddress,   true  },
-    { "util",               "verifymessage",          &verifymessage,          true  },
-    { "util",               "signmessagewithprivkey", &signmessagewithprivkey, true  },
+{ //  category              name                      actor (function)         okSafeMode  argNames
+  //  --------------------- ------------------------  -----------------------  ---------- ----
+    { "control",            "getinfo",                &getinfo,                true, {}  }, /* uses wallet if enabled */
+    { "util",               "validateaddress",        &validateaddress,        true, {}  }, /* uses wallet if enabled */
+    { "util",               "createmultisig",         &createmultisig,         true, {}  },
+    { "util",               "createwitnessaddress",   &createwitnessaddress,   true, {}  },
+    { "util",               "verifymessage",          &verifymessage,          true, {} },
+    { "util",               "signmessagewithprivkey", &signmessagewithprivkey, true, {}  },
 
     /* Address index */
-    { "addressindex",       "getaddressmempool",      &getaddressmempool,      true  },
-    { "addressindex",       "getaddressutxos",        &getaddressutxos,        false },
-    { "addressindex",       "getaddressdeltas",       &getaddressdeltas,       false },
-    { "addressindex",       "getaddresstxids",        &getaddresstxids,        false },
-    { "addressindex",       "getaddressbalance",      &getaddressbalance,      false },
+    { "addressindex",       "getaddressmempool",      &getaddressmempool,      true, {}  },
+    { "addressindex",       "getaddressutxos",        &getaddressutxos,        false, {} },
+    { "addressindex",       "getaddressdeltas",       &getaddressdeltas,       false, {} },
+    { "addressindex",       "getaddresstxids",        &getaddresstxids,        false, {} },
+    { "addressindex",       "getaddressbalance",      &getaddressbalance,      false, {} },
 
     /* Blockchain */
-    { "blockchain",         "getspentinfo",           &getspentinfo,           false },
+    { "blockchain",         "getspentinfo",           &getspentinfo,           false, {} },
 
     /* Not shown in help */
-    { "hidden",             "setmocktime",            &setmocktime,            true  },
+    { "hidden",             "setmocktime",            &setmocktime,            true, {}  },
 };
 
 void RegisterMiscRPCCommands(CRPCTable &tableRPC)
