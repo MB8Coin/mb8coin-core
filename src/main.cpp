@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
-// Copyright (c) 2017 The MB8Coin Core developers
+// Copyright (c) 2017-2018 The MB8Coin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,6 +24,7 @@
 #include "policy/fees.h"
 #include "policy/policy.h"
 #include "pow.h"
+#include "pos.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "random.h"
@@ -8269,22 +8270,6 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
         return("CheckProofOfStake(): Couldn't get Tx Index");
 
     return CheckStakeKernelHash(pindexPrev, nBits, *pblockindex, txPrev, prevout, nTime, hashProofOfStake, targetProofOfStake);
-}
-
-// staker's coin stake reward based on coin age spent (coin-days)
-int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlockIndex* pindexPrev)
-{
-    int64_t nRewardCoinBlock;
-
-    if(nHeight - 1 < 30 * 8 * Params().GetConsensus().nDailyBlockCount) {
-        nRewardCoinBlock = 380;
-    } else {
-        nRewardCoinBlock = 190;
-    }
-
-    int64_t nSubsidy = nRewardCoinBlock * COIN;
-
-    return  nSubsidy + nFees;
 }
 
 unsigned int ComputeMaxBits(arith_uint256 bnTargetLimit, unsigned int nBase, int64_t nTime)

@@ -17,4 +17,6 @@ double GetPoSKernelPS();
 
 extern uint64_t nLastCoinStakeSearchInterval;
 
+int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlockIndex* pindexPrev);
+
 #endif // MB8COIN_POS_H

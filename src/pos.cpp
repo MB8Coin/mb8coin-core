@@ -1,12 +1,13 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
-// Copyright (c) 2017 The MB8Coin Core developers
+// Copyright (c) 2017-2018 The MB8Coin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chain.h"
 #include "main.h"
 #include "pos.h"
+#include "chainparams.h"
 #include "primitives/block.h"
 
 double GetDifficulty(const CBlockIndex* blockindex)
@@ -79,3 +80,19 @@ double GetPoSKernelPS()
 
     return result;
 }
+
+int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlockIndex* pindexPrev)
+{
+    int64_t nRewardCoinBlock;
+
+    if(nHeight - 1 < 30 * 8 * Params().GetConsensus().nDailyBlockCount) {
+        nRewardCoinBlock = 380;
+    } else {
+        nRewardCoinBlock = 190;
+    }
+
+    int64_t nSubsidy = nRewardCoinBlock * COIN;
+
+    return  nSubsidy + nFees;
+}
+
