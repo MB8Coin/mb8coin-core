@@ -9,6 +9,8 @@ src/test/test_mb8coin
 src/qt/test/test_mb8coin-qt
 src/qt/ui_*.h
 
+.\!*
+
 # autoreconf
 Makefile.in
 aclocal.m4
