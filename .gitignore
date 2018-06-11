@@ -79,6 +79,9 @@ src/qt/test/moc*.cpp
 Makefile
 mb8coin-qt
 mb8coin-Qt.app
+MB8Coin-Qt.app
+MB8Coin\ Core.app
+
 
 # Unit-tests
 Makefile.test
