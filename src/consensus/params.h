@@ -58,6 +58,7 @@ struct Params {
     uint32_t nRuleChangeActivationThreshold;
     uint32_t nMinerConfirmationWindow;
     BIP9Deployment vDeployments[MAX_VERSION_BITS_DEPLOYMENTS];
+
     /** Proof of work parameters */
     uint256 powLimit;
     bool fPowAllowMinDifficultyBlocks;
@@ -66,16 +67,6 @@ struct Params {
     int64_t nPowTargetTimespan;
     int nLastPOWBlock;
     int nFirstPOSBlock;
-
-    int nVotingPeriod;
-    int nQuorumVotes;
-    float nVotesAcceptProposal;
-    float nVotesRejectProposal;
-    float nVotesAcceptPaymentRequest;
-    float nVotesRejectPaymentRequest;
-    float nMinimumQuorum;
-    int nCommunityFundMinAge;
-    int64_t nProposalMinimalFee;
 
     /** Proof of stake parameters */
     unsigned int nStakeMinAge;

@@ -104,15 +104,6 @@ public:
         consensus.nTargetTimespan = 25 * 30;
         consensus.nLastPOWBlock = 1000;
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
-        consensus.nVotingPeriod = 2880 * 7; // 7 Days
-        consensus.nMinimumQuorum = 0.5;
-        consensus.nQuorumVotes = consensus.nVotingPeriod * consensus.nMinimumQuorum;
-        consensus.nVotesAcceptProposal = 0.7;
-        consensus.nVotesRejectProposal = 0.7;
-        consensus.nVotesAcceptPaymentRequest = 0.7;
-        consensus.nVotesRejectPaymentRequest = 0.7;
-        consensus.nCommunityFundMinAge = 50;
-        consensus.nProposalMinimalFee = 10000000000;
         consensus.sigActivationTime = 1512990000;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -218,15 +209,6 @@ public:
         consensus.nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
         consensus.nTargetTimespan = 25 * 30;
         consensus.nLastPOWBlock = 100000;
-        consensus.nVotingPeriod = 720; // 6 hours
-        consensus.nMinimumQuorum = 0.5;
-        consensus.nQuorumVotes = consensus.nVotingPeriod * consensus.nMinimumQuorum;
-        consensus.nVotesAcceptProposal = 0.7;
-        consensus.nVotesRejectProposal = 0.7;
-        consensus.nVotesAcceptPaymentRequest = 0.7;
-        consensus.nVotesRejectPaymentRequest = 0.7;
-        consensus.nCommunityFundMinAge = 5;
-        consensus.nProposalMinimalFee = 10000000000;
         consensus.sigActivationTime = 1512826692;
 
         // Deployment of BIP68, BIP112, and BIP113.
@@ -344,15 +326,6 @@ public:
         consensus.nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
         consensus.nTargetTimespan = 25 * 30;
         consensus.nLastPOWBlock = 20000;
-        consensus.nVotingPeriod = 720; // 6 hours
-        consensus.nMinimumQuorum = 0.5;
-        consensus.nQuorumVotes = consensus.nVotingPeriod * consensus.nMinimumQuorum;
-        consensus.nVotesAcceptProposal = 0.7;
-        consensus.nVotesRejectProposal = 0.7;
-        consensus.nVotesAcceptPaymentRequest = 0.7;
-        consensus.nVotesRejectPaymentRequest = 0.7;
-        consensus.nCommunityFundMinAge = 5;
-        consensus.nProposalMinimalFee = 10000000000;
         consensus.sigActivationTime = 0;
 
         pchMessageStart[0] = 0xf9;

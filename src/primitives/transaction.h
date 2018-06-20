@@ -7,7 +7,6 @@
 #define MB8COIN_PRIMITIVES_TRANSACTION_H
 
 #include "amount.h"
-#include "consensus/cfund.h"
 #include "script/script.h"
 #include "serialize.h"
 #include "uint256.h"
@@ -168,26 +167,6 @@ public:
     bool IsEmpty() const
     {
         return (nValue == 0 && scriptPubKey.empty());
-    }
-
-    bool IsCommunityFundContribution() const
-    {
-        return scriptPubKey.IsCommunityFundContribution();
-    }
-
-    bool IsVote() const
-    {
-        return scriptPubKey.IsProposalVote() || scriptPubKey.IsPaymentRequestVote();
-    }
-
-    bool IsProposalVote() const
-    {
-        return scriptPubKey.IsProposalVote();
-    }
-
-    bool IsPaymentRequestVote() const
-    {
-        return scriptPubKey.IsPaymentRequestVote();
     }
 
     uint256 GetHash() const;

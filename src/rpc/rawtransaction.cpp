@@ -54,24 +54,10 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, UniValue& out, bool fInclud
     out.push_back(Pair("reqSigs", nRequired));
     out.push_back(Pair("type", GetTxnOutputType(type)));
 
-    if (type == TX_PAYMENTREQUESTNOVOTE || type == TX_PAYMENTREQUESTYESVOTE
-                 || type == TX_PROPOSALNOVOTE || type == TX_PROPOSALYESVOTE)
-    {
-        vector<std::vector<unsigned char>> vSolutions;
-        txnouttype whichType;
-
-        if (Solver(scriptPubKey, whichType, vSolutions))
-        {
-            out.push_back(Pair("hash", uint256(vSolutions[0]).ToString()));
-        }
-    }
-    else
-    {
-        UniValue a(UniValue::VARR);
-        BOOST_FOREACH(const CTxDestination& addr, addresses)
-            a.push_back(CMB8CoinAddress(addr).ToString());
-        out.push_back(Pair("addresses", a));
-    }
+    UniValue a(UniValue::VARR);
+    BOOST_FOREACH(const CTxDestination& addr, addresses)
+      a.push_back(CMB8CoinAddress(addr).ToString());
+    out.push_back(Pair("addresses", a));
 }
 
 void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, UniValue& entry,
@@ -538,7 +524,7 @@ UniValue createrawtransaction(const JSONRPCRequest &request)
       rawTx.strDZeel = request.params[2].get_str();
     }
 
-    rawTx.nVersion = IsCommunityFundEnabled(pindexBestHeader,Params().GetConsensus()) ? CTransaction::TXDZEEL_VERSION_V2 : CTransaction::TXDZEEL_VERSION;
+    rawTx.nVersion = CTransaction::TXDZEEL_VERSION;
 
     if (request.params.size() > 3 && !request.params[3].isNull()) {
         int64_t nLockTime = request.params[3].get_int64();

@@ -10,7 +10,6 @@
 #include "checkpoints.h"
 #include "chain.h"
 #include "coincontrol.h"
-#include "consensus/cfund.h"
 #include "consensus/consensus.h"
 #include "consensus/validation.h"
 #include "init.h"
@@ -529,15 +528,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         txNew.vout[payments-1].nValue = inodePayment;
         blockValue -= inodePayment;
         txNew.vout[1].nValue = blockValue;
-    }
-
-    // Adds Community Fund output if enabled
-    if(IsCommunityFundEnabled(pindexPrev, Params().GetConsensus()))
-    {
-        int fundIndex = txNew.vout.size() + 1;
-        txNew.vout.resize(fundIndex);
-        CFund::SetScriptForCommunityFundContribution(txNew.vout[fundIndex-1].scriptPubKey);
-        txNew.vout[fundIndex-1].nValue = COMMUNITY_FUND_AMOUNT;
     }
 
     // Sign
@@ -1790,10 +1780,9 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
 
         if (!ExtractDestination(txout.scriptPubKey, address))
         {
-            if(!txout.scriptPubKey.IsCommunityFundContribution())
-                LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s n: %d\n",
-                         this->GetHash().ToString(),i);
-            address = CNoDestination();
+          LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s n: %d\n",
+              this->GetHash().ToString(),i);
+          address = CNoDestination();
         }
 
         COutputEntry output = {address, txout.nValue, (int)i};
@@ -2635,7 +2624,7 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
 
     CMutableTransaction txNew;
 
-    txNew.nVersion = IsCommunityFundEnabled(pindexBestHeader,Params().GetConsensus()) ? CTransaction::TXDZEEL_VERSION_V2 : CTransaction::TXDZEEL_VERSION;
+    txNew.nVersion = CTransaction::TXDZEEL_VERSION;
 
     if(wtxNew.nCustomVersion > 0) txNew.nVersion = wtxNew.nCustomVersion;
 
@@ -2710,9 +2699,6 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
                 BOOST_FOREACH (const CRecipient& recipient, vecSend)
                 {
                     CTxOut txout(recipient.nAmount, recipient.scriptPubKey);
-
-                    if(recipient.scriptPubKey.IsCommunityFundContribution())
-                        wtxNew.fCFund = true;
 
                     if (recipient.fSubtractFeeFromAmount)
                     {

@@ -117,7 +117,6 @@ MB8COIN_CORE_H = \
   policy/rbf.h \
 	pow.h \
   pos.h \
-  consensus/cfund.h \
   protocol.h \
   random.h \
   reverselock.h \
@@ -175,7 +174,6 @@ libmb8coin_server_a_SOURCES = \
   blockencodings.cpp \
   chain.cpp \
   checkpoints.cpp \
-  consensus/cfund.cpp \
   httprpc.cpp \
   httpserver.cpp \
   kernel.cpp \
@@ -224,7 +222,6 @@ endif
 libmb8coin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(MB8COIN_INCLUDES)
 libmb8coin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libmb8coin_wallet_a_SOURCES = \
-  consensus/cfund.cpp \
   wallet/crypter.cpp \
   wallet/db.cpp \
   wallet/rpcdump.cpp \
