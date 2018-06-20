@@ -1,3 +1,7 @@
+dnl Copyright (c) 2013-2016 The Bitcoin Core developers
+dnl Distributed under the MIT software license, see the accompanying
+dnl file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 dnl Helper for cases where a qt dependency is not met.
 dnl Output: If qt version is auto, set mb8coin_enable_qt to false. Else, exit.
 AC_DEFUN([MB8COIN_QT_FAIL],[
@@ -114,12 +118,18 @@ AC_DEFUN([MB8COIN_QT_CONFIGURE],[
     if test x$mb8coin_cv_static_qt = xyes; then
       _MB8COIN_QT_FIND_STATIC_PLUGINS
       AC_DEFINE(QT_STATICPLUGIN, 1, [Define this symbol if qt plugins are static])
-      AC_CACHE_CHECK(for Qt < 5.4, mb8coin_cv_need_acc_widget,[AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-          [[#include <QtCore>]],[[
-          #if QT_VERSION >= 0x050400
-          choke;
+      AC_CACHE_CHECK(for Qt < 5.4, mb8coin_cv_need_acc_widget,[
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+          #include <QtCore/qconfig.h>
+          #ifndef QT_VERSION
+          #  include <QtCore/qglobal.h>
           #endif
-          ]])],
+        ]],
+        [[
+          #if QT_VERSION >= 0x050400
+          choke
+          #endif
+        ]])],
         [mb8coin_cv_need_acc_widget=yes],
         [mb8coin_cv_need_acc_widget=no])
       ])
@@ -167,11 +177,16 @@ AC_DEFUN([MB8COIN_QT_CONFIGURE],[
     TEMP_CXXFLAGS=$CXXFLAGS
     CPPFLAGS="$QT_INCLUDES $CPPFLAGS"
     CXXFLAGS="$PIE_FLAGS $CXXFLAGS"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <QtCore/qconfig.h>]],
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #include <QtCore/qconfig.h>
+        #ifndef QT_VERSION
+        #  include <QtCore/qglobal.h>
+        #endif
+      ]],
       [[
-          #if defined(QT_REDUCE_RELOCATIONS)
-              choke;
-          #endif
+        #if defined(QT_REDUCE_RELOCATIONS)
+        choke
+        #endif
       ]])],
       [ AC_MSG_RESULT(yes); QT_PIE_FLAGS=$PIE_FLAGS ],
       [ AC_MSG_RESULT(no); QT_PIE_FLAGS=$PIC_FLAGS]
@@ -184,11 +199,16 @@ AC_DEFUN([MB8COIN_QT_CONFIGURE],[
     AC_MSG_CHECKING(whether -fPIC is needed with this Qt config)
     TEMP_CPPFLAGS=$CPPFLAGS
     CPPFLAGS="$QT_INCLUDES $CPPFLAGS"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <QtCore/qconfig.h>]],
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #include <QtCore/qconfig.h>
+        #ifndef QT_VERSION
+        #  include <QtCore/qglobal.h>
+        #endif
+      ]],
       [[
-          #if defined(QT_REDUCE_RELOCATIONS)
-              choke;
-          #endif
+        #if defined(QT_REDUCE_RELOCATIONS)
+        choke
+        #endif
       ]])],
       [ AC_MSG_RESULT(no)],
       [ AC_MSG_RESULT(yes); QT_PIE_FLAGS=$PIC_FLAGS]
