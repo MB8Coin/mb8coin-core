@@ -500,10 +500,6 @@ bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams,
 bool IsWitnessEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 bool IsWitnessLocked(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 
-/** Check whether community fund has been activated. */
-bool IsCommunityFundEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
-bool IsCommunityFundLocked(const CBlockIndex* pindexPrev, const Consensus::Params& params);
-
 /** When there are blocks in the active chain with missing data, rewind the chainstate and remove them from the block index */
 bool RewindBlockIndex(const CChainParams& params);
 
@@ -614,8 +610,6 @@ static const unsigned int MAX_STANDARD_TX_SIZE = MAX_BLOCK_SIZE_GEN/5;
 /** The maximum allowed number of signature check operations in a block (network rule) */
 
 const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake);
-
-bool CountVotes(CValidationState& state, CBlockIndex *pindexNew, const CBlock* pblock);
 
 bool IsSigHFEnabled(const Consensus::Params &consensus, const CBlockIndex *pindexPrev);
 

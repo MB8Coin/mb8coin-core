@@ -6,7 +6,6 @@
 #include "amount.h"
 #include "base58.h"
 #include "chain.h"
-#include "consensus/cfund.h"
 #include "core_io.h"
 #include "init.h"
 #include "main.h"
@@ -358,8 +357,8 @@ static void SendMoney(const CTxDestination &address, CAmount nValue, bool fSubtr
     // Parse MB8Coin address
     CScript scriptPubKey = GetScriptForDestination(address);
 
-    if(donate)
-      CFund::SetScriptForCommunityFundContribution(scriptPubKey);
+    if(donate) {
+    }
 
     // Create and send the transaction
     CReserveKey reservekey(pwalletMain);
@@ -487,209 +486,6 @@ UniValue stakervote(const JSONRPCRequest &request)
     WriteConfigFile("stakervote", request.params[0].get_str());
 
     return "";
-}
-
-UniValue createproposal(const JSONRPCRequest &request)
-{
-    if (!EnsureWalletIsAvailable(request.fHelp))
-        return NullUniValue;
-
-    if (request.fHelp || request.params.size() < 4)
-        throw runtime_error(
-            "createproposal address amount deadline\n"
-            "\nCreates a proposal for the community fund. Min fee of " + std::to_string((float)Params().GetConsensus().nProposalMinimalFee/COIN) + "MB8 is required.\n"
-            + HelpRequiringPassphrase() +
-            "\nArguments:\n"
-            "1. \"mb8coinaddress\"     (string, required) The mb8coin address where coins would be sent if proposal is approved.\n"
-            "2. \"amount\"             (numeric or string, required) The amount in " + CURRENCY_UNIT + " to requesst. eg 0.1\n"
-            "3. deadline               (numeric, required) Epoch timestamp when the proposal would expire.\n"
-            "4. \"desc\"               (string, required) Short description of the proposal.\n"
-            "5. fee                    (numeric, optional) Contribution to the fund used as fee.\n"
-            "\nResult:\n"
-            "\"{ hash: proposalid,\"            (string) The proposal id.\n"
-            "\"  strDZeel: string }\"            (string) The attached strdzeel property.\n"
-            "\nExamples:\n"
-            + HelpExampleCli("createproposal", "\"NQFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ\" 1000 1509151016 \"Development\"")
-        );
-
-    LOCK2(cs_main, pwalletMain->cs_wallet);
-
-    CMB8CoinAddress address("NQFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ"); // Dummy address
-
-    // Amount
-    CAmount nAmount = request.params.size() == 5 ? AmountFromValue(request.params[4]) : Params().GetConsensus().nProposalMinimalFee;
-    if (nAmount <= 0 || nAmount < Params().GetConsensus().nProposalMinimalFee)
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for fee");
-
-    CWalletTx wtx;
-    bool fSubtractFeeFromAmount = false;
-
-    string Address = request.params[0].get_str();
-
-    CMB8CoinAddress destaddress(Address);
-    if (!destaddress.IsValid())
-      throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Navcoin address");
-
-    CAmount nReqAmount = AmountFromValue(request.params[1]);
-    int64_t nDeadline = request.params[2].get_int64();
-    string sDesc = request.params[3].get_str();
-
-    UniValue strDZeel(UniValue::VOBJ);
-
-    strDZeel.push_back(Pair("n",nReqAmount));
-    strDZeel.push_back(Pair("a",Address));
-    strDZeel.push_back(Pair("d",nDeadline));
-    strDZeel.push_back(Pair("s",sDesc));
-
-    wtx.strDZeel = strDZeel.write();
-    wtx.nCustomVersion = CTransaction::PROPOSAL_VERSION;
-
-    if(wtx.strDZeel.length() > 1024)
-        throw JSONRPCError(RPC_TYPE_ERROR, "String too long");
-
-    EnsureWalletIsUnlocked();
-
-    SendMoney(address.Get(), nAmount, fSubtractFeeFromAmount, wtx, "", true);
-
-    UniValue ret(UniValue::VOBJ);
-
-    ret.push_back(Pair("hash",wtx.GetHash().GetHex()));
-    ret.push_back(Pair("strDZeel",wtx.strDZeel));
-
-    return ret;
-}
-
-UniValue createpaymentrequest(const JSONRPCRequest &request)
-{
-    if (!EnsureWalletIsAvailable(request.fHelp))
-        return NullUniValue;
-
-    if (request.fHelp || request.params.size() != 3)
-        throw runtime_error(
-            "createpaymentrequest hash amount id\n"
-            "\nCreates a proposal to withdraw funds from the community fund. Fee: 0.0001 MB8\n"
-            + HelpRequiringPassphrase() +
-            "\nArguments:\n"
-            "1. \"hash\"               (string, required) The hash of the proposal from which you want to withdraw funds. It must be approved.\n"
-            "2. \"amount\"             (numeric or string, required) The amount in " + CURRENCY_UNIT + " to withdraw. eg 10\n"
-            "3. \"id\"                 (string, required) Unique id to identify the payment request\n"
-            "\nResult:\n"
-            "\"{ hash: prequestid,\"             (string) The payment request id.\n"
-            "\"  strDZeel: string }\"            (string) The attached strdzeel property.\n"
-            "\nExamples:\n"
-            + HelpExampleCli("createpaymentrequest", "\"196a4c2115d3c1c1dce1156eb2404ad77f3c5e9f668882c60cb98d638313dbd3\" 1000 \"Invoice March 2017\"")
-        );
-
-    LOCK2(cs_main, pwalletMain->cs_wallet);
-
-    CFund::CProposal proposal;
-
-    if(!CFund::FindProposal(request.params[0].get_str(),proposal))
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid proposal hash.");
-
-    if(proposal.fState != CFund::ACCEPTED)
-        throw JSONRPCError(RPC_TYPE_ERROR, "Proposal has not been accepted.");
-
-    CMB8CoinAddress address(proposal.Address);
-
-    if(!address.IsValid())
-        throw JSONRPCError(RPC_TYPE_ERROR, "Address of the proposal is not a valid MB8Coin address.");
-
-    CKeyID keyID;
-    if (!address.GetKeyID(keyID))
-        throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key.");
-
-    CKey key;
-    if (!pwalletMain->GetKey(keyID, key))
-        throw JSONRPCError(RPC_WALLET_ERROR, "You are not the owner of the proposal. Can't find the private key.");
-
-    CAmount nReqAmount = AmountFromValue(request.params[1]);
-    std::string id = request.params[2].get_str();
-
-    std::string Secret = "I kindly ask to withdraw " + std::to_string(nReqAmount) + "MB8 from the proposal " + proposal.hash.ToString() + ". Payment request id: " + id;
-
-    CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
-    ss << Secret;
-
-    vector<unsigned char> vchSig;
-    if (!key.SignCompact(ss.GetHash(), vchSig))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed.");
-
-    std::string Signature = EncodeBase64(&vchSig[0], vchSig.size());
-
-    if (nReqAmount <= 0 || nReqAmount > proposal.GetAvailable(true))
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount.");
-
-    CWalletTx wtx;
-    bool fSubtractFeeFromAmount = false;
-
-    UniValue strDZeel(UniValue::VOBJ);
-
-    strDZeel.push_back(Pair("h", request.params[0].get_str()));
-    strDZeel.push_back(Pair("n", nReqAmount));
-    strDZeel.push_back(Pair("s", Signature));
-    strDZeel.push_back(Pair("i", id));
-
-    wtx.strDZeel = strDZeel.write();
-    wtx.nCustomVersion = CTransaction::PAYMENT_REQUEST_VERSION;
-
-    if(wtx.strDZeel.length() > 1024)
-        throw JSONRPCError(RPC_TYPE_ERROR, "String too long");
-
-    EnsureWalletIsUnlocked();
-
-    SendMoney(address.Get(), 10000, fSubtractFeeFromAmount, wtx, "", true);
-
-    UniValue ret(UniValue::VOBJ);
-
-    ret.push_back(Pair("hash",wtx.GetHash().GetHex()));
-    ret.push_back(Pair("strDZeel",wtx.strDZeel));
-
-    return ret;
-}
-
-UniValue donatefund(const JSONRPCRequest &request)
-{
-    if (!EnsureWalletIsAvailable(request.fHelp))
-        return NullUniValue;
-
-    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
-        throw runtime_error(
-            "donatefund amount ( subtractfeefromamount )\n"
-            "\nDonates an amount to the community fund.\n"
-            + HelpRequiringPassphrase() +
-            "\nArguments:\n"
-            "1. \"amount\"      (numeric or string, required) The amount in " + CURRENCY_UNIT + " to donate. eg 0.1\n"
-            "2. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
-            "                             The fund will receive less mb8coins than you enter in the amount field.\n"
-            "\nResult:\n"
-            "\"transactionid\"  (string) The transaction id.\n"
-            "\nExamples:\n"
-            + HelpExampleCli("donatefund", "0.1")
-            + HelpExampleCli("donatefund", "0.1 true")
-
-        );
-
-    LOCK2(cs_main, pwalletMain->cs_wallet);
-
-    CMB8CoinAddress address("NQFqqMUD55ZV3PJEJZtaKCsQmjLT6JkjvJ"); // Dummy address
-
-    // Amount
-    CAmount nAmount = AmountFromValue(request.params[0]);
-    if (nAmount <= 0)
-        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
-
-    CWalletTx wtx;
-    bool fSubtractFeeFromAmount = false;
-    if (request.params.size() == 2)
-        fSubtractFeeFromAmount = request.params[1].get_bool();
-
-    EnsureWalletIsUnlocked();
-
-    SendMoney(address.Get(), nAmount, fSubtractFeeFromAmount, wtx, "", true);
-
-    return wtx.GetHash().GetHex();
 }
 
 UniValue listaddressgroupings(const JSONRPCRequest &request)
@@ -1599,13 +1395,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
                 entry.push_back(Pair("involvesWatchonly", true));
             entry.push_back(Pair("account", strSentAccount));
             MaybePushAddress(entry, s.destination);
-            bool fCFund = false;
-            for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
-            {
-                const CTxOut& txout = wtx.vout[nOut];
-                if (txout.scriptPubKey.IsCommunityFundContribution()) fCFund = true;
-            }
-            entry.push_back(Pair("category", fCFund ? "cfund contribution" : "send"));
+            entry.push_back(Pair("category", "send"));
             entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
             if (pwalletMain->mapAddressBook.count(s.destination))
                 entry.push_back(Pair("label", pwalletMain->mapAddressBook[s.destination].name));
@@ -3065,138 +2855,6 @@ UniValue resolveopenalias(const JSONRPCRequest &request)
 }
 #endif
 
-UniValue proposalvotelist(const JSONRPCRequest &request)
-{
-    UniValue ret(UniValue::VOBJ);
-    UniValue yesvotes(UniValue::VARR);
-    UniValue novotes(UniValue::VARR);
-
-    for (unsigned int i = 0; i < vAddedProposalVotes.size(); i++)
-    {
-        CFund::CProposal proposal;
-        if(pblocktree->ReadProposalIndex(uint256S("0x"+vAddedProposalVotes[i].first), proposal))
-        {
-            if(vAddedProposalVotes[i].second)
-            {
-                yesvotes.push_back(proposal.ToString());
-            }
-            else
-            {
-                novotes.push_back(proposal.ToString());
-            }
-        }
-    }
-
-    ret.push_back(Pair("yes",yesvotes));
-    ret.push_back(Pair("no",novotes));
-
-    return ret;
-}
-
-UniValue proposalvote(const JSONRPCRequest &request)
-{
-    string strCommand;
-
-    if (request.params.size() >= 2)
-        strCommand = request.params[1].get_str();
-    if (request.fHelp || request.params.size() > 3 ||
-        (strCommand != "yes" && strCommand != "no" && strCommand != "remove"))
-        throw runtime_error(
-            "proposalvote \"proposal_hash\" \"yes|no|remove\"\n"
-            "\nAdds a proposal to the list of votes.\n"
-            "\nArguments:\n"
-            "1. \"proposal_hash\" (string, required) The proposal hash\n"
-            "2. \"command\"       (string, required) 'yes' to vote yes, 'no' to vote no,\n"
-            "                      'remove' to remove a proposal from the list\n"
-        );
-
-    string strHash = request.params[0].get_str();
-
-    if (strCommand == "yes")
-    {
-      CFund::VoteProposal(strHash,true);
-      return NullUniValue;
-    }
-    else if (strCommand == "no")
-    {
-      CFund::VoteProposal(strHash,false);
-      return NullUniValue;
-    }
-    else if(strCommand == "remove")
-    {
-      CFund::RemoveVoteProposal(strHash);
-      return NullUniValue;
-    }
-
-    return NullUniValue;
-}
-
-UniValue paymentrequestvotelist(const JSONRPCRequest &request)
-{
-    UniValue ret(UniValue::VOBJ);
-    UniValue yesvotes(UniValue::VARR);
-    UniValue novotes(UniValue::VARR);
-
-    for (unsigned int i = 0; i < vAddedPaymentRequestVotes.size(); i++)
-    {
-        CFund::CPaymentRequest prequest;
-        if(pblocktree->ReadPaymentRequestIndex(uint256S("0x"+vAddedPaymentRequestVotes[i].first), prequest))
-        {
-            if(vAddedPaymentRequestVotes[i].second)
-            {
-                yesvotes.push_back(prequest.ToString());
-            }
-            else
-            {
-                novotes.push_back(prequest.ToString());
-            }
-        }
-    }
-
-    ret.push_back(Pair("yes",yesvotes));
-    ret.push_back(Pair("no",novotes));
-
-    return ret;
-}
-
-UniValue paymentrequestvote(const JSONRPCRequest &request)
-{
-    string strCommand;
-
-    if (request.params.size() >= 2)
-        strCommand = request.params[1].get_str();
-    if (request.fHelp || request.params.size() > 3 ||
-        (strCommand != "yes" && strCommand != "no" && strCommand != "remove"))
-        throw runtime_error(
-            "paymentrequestvote \"request_hash\" \"yes|no|remove\"\n"
-            "\nAdds/removes a proposal to the list of votes.\n"
-            "\nArguments:\n"
-            "1. \"request_hash\" (string, required) The payment request hash\n"
-            "2. \"command\"       (string, required) 'yes' to vote yes, 'no' to vote no,\n"
-            "                      'remove' to remove a proposal from the list\n"
-        );
-
-    string strHash = request.params[0].get_str();
-
-    if (strCommand == "yes")
-    {
-      CFund::VotePaymentRequest(strHash,true);
-      return NullUniValue;
-    }
-    else if (strCommand == "no")
-    {
-      CFund::VotePaymentRequest(strHash,false);
-      return NullUniValue;
-    }
-    else if(strCommand == "remove")
-    {
-      CFund::RemoveVotePaymentRequest(strHash);
-      return NullUniValue;
-    }
-    return NullUniValue;
-
-}
-
 extern UniValue dumpprivkey(const JSONRPCRequest &request); // in rpcdump.cpp
 extern UniValue dumpmasterprivkey(const JSONRPCRequest &request);
 extern UniValue importprivkey(const JSONRPCRequest &request);
@@ -3251,14 +2909,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "sendfrom",                 &sendfrom,                 false, {"fromaccount","toaddress","amount","minconf","comment","comment_to"} },
     { "wallet",             "sendmany",                 &sendmany,                 false, {"fromaccount|dummy","amounts","minconf","comment","subtractfeefrom","replaceable","conf_target","estimate_mode"} },
     { "wallet",             "sendtoaddress",            &sendtoaddress,            false, {"address","amount","comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
-    { "wallet",             "donatefund",               &donatefund,               false, {} },
-    { "wallet",             "createpaymentrequest",     &createpaymentrequest,     false, {} },
-    { "wallet",             "createproposal",           &createproposal,           false, {} },
     { "wallet",             "stakervote",               &stakervote,               false, {} },
-    { "wallet",             "proposalvote",             &proposalvote,             false, {} },
-    { "wallet",             "proposalvotelist",         &proposalvotelist,         false, {} },
-    { "wallet",             "paymentrequestvote",       &paymentrequestvote,       false, {} },
-    { "wallet",             "paymentrequestvotelist",   &paymentrequestvotelist,   false, {} },
     { "wallet",             "setaccount",               &setaccount,               true,  {} },
     { "wallet",             "settxfee",                 &settxfee,                 true,  {"amount"} },
     { "wallet",             "signmessage",              &signmessage,              true,  {"address","message"} },

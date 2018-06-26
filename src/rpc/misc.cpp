@@ -92,10 +92,7 @@ UniValue getinfo(const JSONRPCRequest &request)
     }
 #endif
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
-
-    UniValue cf(UniValue::VOBJ);
-    cf.push_back(Pair("available",      ValueFromAmount(pindexBestHeader->nCFSupply)));
-    cf.push_back(Pair("locked",         ValueFromAmount(pindexBestHeader->nCFLocked)));
+    obj.push_back(Pair("moneysupply", ValueFromAmount(pindexBestHeader->nMoneySupply))); 
 
     obj.push_back(Pair("timeoffset",    GetTimeOffset()));
     obj.push_back(Pair("connections",   (int)vNodes.size()));

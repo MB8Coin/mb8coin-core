@@ -166,100 +166,6 @@ bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos>
     return WriteBatch(batch);
 }
 
-bool CBlockTreeDB::ReadProposalIndex(const uint256 &proposalid, CFund::CProposal &proposal) {
-    return Read(make_pair(DB_PROPINDEX, proposalid), proposal);
-}
-
-bool CBlockTreeDB::WriteProposalIndex(const std::vector<std::pair<uint256, CFund::CProposal> >&vect) {
-    CDBBatch batch(*this);
-    for (std::vector<std::pair<uint256,CFund::CProposal> >::const_iterator it=vect.begin(); it!=vect.end(); it++)
-        batch.Write(make_pair(DB_PROPINDEX, it->first), it->second);
-    return WriteBatch(batch);
-}
-
-bool CBlockTreeDB::UpdateProposalIndex(const std::vector<std::pair<uint256, CFund::CProposal> >&vect) {
-    CDBBatch batch(*this);
-    for (std::vector<std::pair<uint256,CFund::CProposal> >::const_iterator it=vect.begin(); it!=vect.end(); it++) {
-        if (it->second.IsNull()) {
-            batch.Erase(make_pair(DB_PROPINDEX, it->first));
-        } else {
-            batch.Write(make_pair(DB_PROPINDEX, it->first), it->second);
-        }
-    }
-    return WriteBatch(batch);
-}
-
-bool CBlockTreeDB::GetProposalIndex(std::vector<CFund::CProposal>&vect) {
-    boost::scoped_ptr<CDBIterator> pcursor(NewIterator());
-
-    pcursor->Seek(make_pair(DB_PROPINDEX, uint256()));
-
-    while (pcursor->Valid()) {
-        boost::this_thread::interruption_point();
-        std::pair<char, uint256> key;
-        if (pcursor->GetKey(key) && key.first == DB_PROPINDEX) {
-            CFund::CProposal proposal;
-            if (pcursor->GetValue(proposal)) {
-                vect.push_back(proposal);
-                pcursor->Next();
-            } else {
-                return error("GetProposalIndex() : failed to read value");
-            }
-        } else {
-            break;
-        }
-    }
-
-    return true;
-}
-
-bool CBlockTreeDB::ReadPaymentRequestIndex(const uint256 &prequestid, CFund::CPaymentRequest &prequest) {
-    return Read(make_pair(DB_PREQINDEX, prequestid), prequest);
-}
-
-bool CBlockTreeDB::WritePaymentRequestIndex(const std::vector<std::pair<uint256, CFund::CPaymentRequest> >&vect) {
-    CDBBatch batch(*this);
-    for (std::vector<std::pair<uint256,CFund::CPaymentRequest> >::const_iterator it=vect.begin(); it!=vect.end(); it++)
-        batch.Write(make_pair(DB_PREQINDEX, it->first), it->second);
-    return WriteBatch(batch);
-}
-
-bool CBlockTreeDB::UpdatePaymentRequestIndex(const std::vector<std::pair<uint256, CFund::CPaymentRequest> >&vect) {
-    CDBBatch batch(*this);
-    for (std::vector<std::pair<uint256,CFund::CPaymentRequest> >::const_iterator it=vect.begin(); it!=vect.end(); it++) {
-        if (it->second.IsNull()) {
-            batch.Erase(make_pair(DB_PREQINDEX, it->first));
-        } else {
-            batch.Write(make_pair(DB_PREQINDEX, it->first), it->second);
-        }
-    }
-    return WriteBatch(batch);
-}
-
-bool CBlockTreeDB::GetPaymentRequestIndex(std::vector<CFund::CPaymentRequest>&vect) {
-    boost::scoped_ptr<CDBIterator> pcursor(NewIterator());
-
-    pcursor->Seek(make_pair(DB_PREQINDEX, uint256()));
-
-    while (pcursor->Valid()) {
-        boost::this_thread::interruption_point();
-        std::pair<char, uint256> key;
-        if (pcursor->GetKey(key) && key.first == DB_PREQINDEX) {
-            CFund::CPaymentRequest prequest;
-            if (pcursor->GetValue(prequest)) {
-                vect.push_back(prequest);
-                pcursor->Next();
-            } else {
-                return error("GetPaymentRequestIndex() : failed to read value");
-            }
-        } else {
-            break;
-        }
-    }
-
-    return true;
-}
-
 bool CBlockTreeDB::ReadSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value) {
     return Read(make_pair(DB_SPENTINDEX, key), value);
 }
@@ -451,11 +357,8 @@ bool CBlockTreeDB::LoadBlockIndexGuts(boost::function<CBlockIndex*(const uint256
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
                 pindexNew->nMint          = diskindex.nMint;
-                pindexNew->nCFSupply      = diskindex.nCFSupply;
-                pindexNew->vPaymentRequestVotes
-                                          = diskindex.vPaymentRequestVotes;
-                pindexNew->vProposalVotes = diskindex.vProposalVotes;
-                pindexNew->nCFLocked      = diskindex.nCFLocked;
+                pindexNew->nMoneySupply   = diskindex.nMoneySupply;
+
                 pindexNew->strDZeel       = diskindex.strDZeel;
                 pindexNew->nFlags         = diskindex.nFlags;
                 pindexNew->nStakeModifier = diskindex.nStakeModifier;

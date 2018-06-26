@@ -81,11 +81,6 @@ static bool SignStep(const BaseSignatureCreator& creator, const CScript& scriptP
     switch (whichTypeRet)
     {
     case TX_NONSTANDARD:
-    case TX_PROPOSALYESVOTE:
-    case TX_PAYMENTREQUESTYESVOTE:
-    case TX_PROPOSALNOVOTE:
-    case TX_PAYMENTREQUESTNOVOTE:
-    case TX_CONTRIBUTION:
     case TX_NULL_DATA:
         return false;
     case TX_PUBKEY:
