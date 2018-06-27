@@ -314,7 +314,7 @@ AC_DEFUN([_MB8COIN_QT_IS_STATIC],[
       #endif
     ]],
     [[
-      #if defined(QT_STATIC)
+      #if !defined(QT_STATIC)
       choke
       #endif
     ]])],
