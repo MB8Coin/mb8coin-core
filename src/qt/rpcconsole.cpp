@@ -212,6 +212,7 @@ void RPCExecutor::request(const QString &command)
         // and pass it along with the method name to the dispatcher.
         UniValue params = RPCConvertValues(args[0], std::vector<std::string>(args.begin() + 1, args.end()));
         JSONRPCRequest req;
+        req.strMethod = args[0];
         req.params = params;
         UniValue result = tableRPC.execute(req);
 
