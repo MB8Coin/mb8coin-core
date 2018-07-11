@@ -66,6 +66,11 @@ void OptionsModel::Init(bool resetSettings)
         settings.setValue("fMinimizeOnClose", false);
     fMinimizeOnClose = settings.value("fMinimizeOnClose").toBool();
 
+    if (!settings.contains("fShowNotifications")) {
+      settings.setValue("fShowNotifications", true);
+    }
+    fShowNotifications = settings.value("fShowNotifications").toBool();
+    Q_EMIT showNotificationsChanged(fShowNotifications);
     // Display
     if (!settings.contains("nDisplayUnit"))
         settings.setValue("nDisplayUnit", MB8CoinUnits::MB8);
@@ -173,6 +178,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
         {
         case StartAtStartup:
             return GUIUtil::GetStartOnSystemStartup();
+        case ShowNotifications:
+            return fShowNotifications;
         case HideTrayIcon:
             return fHideTrayIcon;
         case MinimizeToTray:
@@ -250,6 +257,11 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
         {
         case StartAtStartup:
             successful = GUIUtil::SetStartOnSystemStartup(value.toBool());
+            break;
+        case ShowNotifications:
+            fShowNotifications = value.toBool();
+            settings.setValue("fShowNotifications", fShowNotifications);
+        Q_EMIT showNotificationsChanged(fShowNotifications);
             break;
         case HideTrayIcon:
             fHideTrayIcon = value.toBool();

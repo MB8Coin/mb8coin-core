@@ -39,7 +39,17 @@
           <string>&amp;Start %1 on system login</string>
          </property>
         </widget>
-       </item>
+      </item>
+      <item>
+        <widget class="QCheckBox" name="mb8coinNotifications">
+          <property name="toolTip">
+            <string>Show desktop notifications for %1.</string>
+          </property>
+          <property name="text">
+            <string>Show desktop &amp;notifications</string>
+          </property>
+        </widget>
+      </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2_Main">
          <item>

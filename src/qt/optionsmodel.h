@@ -46,7 +46,8 @@ public:
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
         Listen,                 // bool
-        OptionIDRowCount,
+        ShowNotifications,      // bool
+        OptionIDRowCount
     };
 
     void Init(bool resetSettings = false);
@@ -66,6 +67,7 @@ public:
     QString getThirdPartyTxUrls() { return strThirdPartyTxUrls; }
     bool getProxySettings(QNetworkProxy& proxy) const;
     bool getCoinControlFeatures() { return fCoinControlFeatures; }
+    bool getShowNotifications() { return fShowNotifications; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
 
     /* Restart flag helper */
@@ -77,6 +79,7 @@ private:
     bool fHideTrayIcon;
     bool fMinimizeToTray;
     bool fMinimizeOnClose;
+    bool fShowNotifications;
     QString language;
     int nDisplayUnit;
     QString strThirdPartyTxUrls;
@@ -93,6 +96,7 @@ Q_SIGNALS:
     void displayUnitChanged(int unit);
     void coinControlFeaturesChanged(bool);
     void hideTrayIconChanged(bool);
+    void showNotificationsChanged(bool);
 };
 
 #endif // MB8COIN_QT_OPTIONSMODEL_H

@@ -147,6 +147,7 @@ private:
 
     QAction *updatePriceAction;
     bool fShowingVoting;
+    bool fShowNotifications;
 
     /** Create the main UI actions. */
     void createActions();
@@ -267,6 +268,7 @@ private Q_SLOTS:
 
     /** When hideTrayIcon setting is changed in OptionsModel hide or show the icon accordingly. */
     void setTrayIconVisible(bool);
+    void setShowNotifications(bool show);
 };
 
 class UnitDisplayStatusBarControl : public QLabel

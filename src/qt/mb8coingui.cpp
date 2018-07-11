@@ -147,6 +147,7 @@ MB8CoinGUI::MB8CoinGUI(const PlatformStyle *platformStyle, const NetworkStyle *n
     toggleStakingAction(0),
     updatePriceAction(0),
     fShowingVoting(0),
+    fShowNotifications(true),
     platformStyle(platformStyle)
 {
     GUIUtil::restoreWindowGeometry("nWindow", QSize(840, 600), this);
@@ -680,6 +681,13 @@ void MB8CoinGUI::setClientModel(ClientModel *clientModel)
 
             // initialize the disable state of the tray icon with the current value in the model.
             setTrayIconVisible(optionsModel->getHideTrayIcon());
+
+            connect(
+              optionsModel,
+              SIGNAL(showNotificationsChanged(bool)),
+              this,
+              SLOT(setShowNotifications(bool)));
+            setShowNotifications(optionsModel->getShowNotifications());
         }
     } else {
         // Disable possibility to show main window via action
@@ -1228,9 +1236,9 @@ void MB8CoinGUI::message(const QString &title, const QString &message, unsigned 
         int r = mBox.exec();
         if (ret != NULL)
             *ret = r == QMessageBox::Ok;
+    } else if (fShowNotifications) {
+      notificator->notify((Notificator::Class)nNotifyIcon, strTitle, message);
     }
-    else
-        notificator->notify((Notificator::Class)nNotifyIcon, strTitle, message);
 }
 
 void MB8CoinGUI::changeEvent(QEvent *e)
@@ -1460,6 +1468,10 @@ void MB8CoinGUI::setTrayIconVisible(bool fHideTrayIcon)
     {
         trayIcon->setVisible(!fHideTrayIcon);
     }
+}
+
+void MB8CoinGUI::setShowNotifications(bool show) {
+  fShowNotifications = show;
 }
 
 static bool ThreadSafeMessageBox(MB8CoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)

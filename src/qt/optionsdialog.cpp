@@ -92,6 +92,8 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     ui->mb8coinAtStartup->setToolTip(ui->mb8coinAtStartup->toolTip().arg(tr(PACKAGE_NAME)));
     ui->mb8coinAtStartup->setText(ui->mb8coinAtStartup->text().arg(tr(PACKAGE_NAME)));
 
+    ui->mb8coinNotifications->setToolTip(ui->mb8coinNotifications->toolTip().arg(tr(PACKAGE_NAME)));
+
     ui->lang->setToolTip(ui->lang->toolTip().arg(tr(PACKAGE_NAME)));
     ui->lang->addItem(QString("(") + tr("default") + QString(")"), QVariant(""));
     Q_FOREACH(const QString &langStr, translations.entryList())
@@ -192,6 +194,8 @@ void OptionsDialog::setMapper()
 {
     /* Main */
     mapper->addMapping(ui->mb8coinAtStartup, OptionsModel::StartAtStartup);
+    mapper->addMapping(ui->mb8coinNotifications, OptionsModel::ShowNotifications);
+    mapper->addMapping(ui->mb8coinNotifications, OptionsModel::ShowNotifications);
     mapper->addMapping(ui->threadsScriptVerif, OptionsModel::ThreadsScriptVerif);
     mapper->addMapping(ui->databaseCache, OptionsModel::DatabaseCache);
 
