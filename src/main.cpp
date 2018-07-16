@@ -1793,15 +1793,14 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
 
-    if (nHeight < 500)
-    {
-        // Premine amount of 571,000,000
-        CAmount nSubsidy = (571e6 / 500) * COIN;
-        return nSubsidy;
+    if (nHeight <= 500) {
+      // Premine amount of 561,000,000
+      CAmount nSubsidy = (561e6 / 500) * COIN;
+      return nSubsidy;
     }
 
     // Only 1 coin after premine until start of Proof of stake.
-    CAmount nSubsidy = 1 * COIN;
+    CAmount nSubsidy = (10e6 / 1000) * COIN;
     return nSubsidy;
 }
 

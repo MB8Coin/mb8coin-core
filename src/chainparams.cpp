@@ -55,7 +55,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "14/05/2018 - A new hope rises";
+    const char* pszTimestamp = "16/07/2018 - BlackRock Eyes Bitcoin Futures";
     const CScript genesisOutputScript = CScript() << ParseHex("04bf5608f13e9b2781b839ea78adbd1cb90d8fc17dcc67028e93e65223ea77f8bc8d8eed1191f37dd0ad20f371912d86e1c2e7369251cb06d2a3fdc5e26262d6df") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
@@ -102,7 +102,7 @@ public:
         consensus.nDailyBlockCount =  (24 * 60 * 60) / consensus.nTargetSpacing;
         consensus.nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
         consensus.nTargetTimespan = 25 * 30;
-        consensus.nLastPOWBlock = 1000;
+        consensus.nLastPOWBlock = 1001;
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512990000;
 
@@ -142,12 +142,12 @@ public:
         nPruneAfterHeight = 100000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 16);
 
-        genesis = CreateGenesisBlock(1526309920, 9999, 0x1f00ffff, 1, 0);
+        genesis = CreateGenesisBlock(1531773333, 139858, 0x1f00ffff, 1, 0);
 
 	      consensus.hashGenesisBlock = genesis.GetHash();
 
-        assert(consensus.hashGenesisBlock == uint256S("0x0000fa3dbbe6d00b4a921c2e44b2a9234bf6239d5004f80e94798adb159ea598"));
-        assert(genesis.hashMerkleRoot == uint256S("0x226916092368fd781ed89524a0bd9f6be86d7b043ff44f08c6e0936c79ade33d"));
+        assert(consensus.hashGenesisBlock == uint256S("0x000066cee301e32c37297f0698f21f3d32c9cf8daf0a6b1724af1d69544e60b0"));
+        assert(genesis.hashMerkleRoot == uint256S("0x675099373c9a3c4c388bd06a2974850d03e59c6330ed701a073c1ff694de2f78"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,85);
@@ -158,8 +158,7 @@ public:
         vFixedSeeds.clear();
       	vSeeds.clear();
 
-        vSeeds.emplace_back("", "45.55.56.191");
-        vSeeds.emplace_back("", "206.189.179.28");
+        vSeeds.emplace_back("vidaru", "mb8coin.seeds.vidaru.org");
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;
@@ -170,8 +169,8 @@ public:
 
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
-            ( 0, uint256S("0x000005ab732033d555115e008435629fb9917bae8389369477e51974f38b4e9d")),
-            1525367455, // * UNIX timestamp of last checkpoint block
+            ( 0, uint256S("0x000066cee301e32c37297f0698f21f3d32c9cf8daf0a6b1724af1d69544e60b0")),
+            1531773333, // * UNIX timestamp of last checkpoint block
             0,    // * total number of transactions between genesis and last checkpoint
                         //   (the tx=... number in the SetBestChain debug.log lines)
             0.0        // * estimated number of transactions per day after checkpoint
