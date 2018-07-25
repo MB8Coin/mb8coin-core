@@ -1793,15 +1793,25 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
 
-    if (nHeight <= 500) {
-      // Premine amount of 561,000,000
-      CAmount nSubsidy = (561e6 / 500) * COIN;
-      return nSubsidy;
-    }
+  // ICO + Marketing amount of 561,000,000
+  const int premine = 561e6;
+  // Devfund amount of 10,000,000
+  const int devfund = 10e6;
+  const int total_blocks = consensusParams.nLastPOWBlock;
 
-    // Only 1 coin after premine until start of Proof of stake.
-    CAmount nSubsidy = (10e6 / 1000) * COIN;
+  const int premine_blocks = total_blocks / 2;
+  int devfund_blocks = total_blocks / 2;
+  if (total_blocks % 2 == 1) {
+    devfund_blocks -= 1;
+  }
+
+  if (nHeight <= premine_blocks) {
+    CAmount nSubsidy = (premine / premine_blocks) * COIN;
     return nSubsidy;
+  }
+
+  CAmount nSubsidy = (devfund / devfund_blocks) * COIN;
+  return nSubsidy;
 }
 
 bool IsInitialBlockDownload()
