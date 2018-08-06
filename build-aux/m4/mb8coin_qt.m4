@@ -285,15 +285,13 @@ dnl Requires: INCLUDES must be populated as necessary.
 dnl Output: mb8coin_cv_qt5=yes|no
 AC_DEFUN([_MB8COIN_QT_CHECK_QT5],[
   AC_CACHE_CHECK(for Qt 5, mb8coin_cv_qt5,[
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-      #include <QtCore/qconfig.h>
-      #ifndef QT_VERSION
-      #  include <QtCore/qglobal.h>
-      #endif
-    ]],
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[#include <QtCore>]],
     [[
       #if QT_VERSION < 0x050000
-      choke
+      choke me
+      #else
+      return 0;
       #endif
     ]])],
     [mb8coin_cv_qt5=yes],
