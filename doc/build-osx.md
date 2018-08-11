@@ -20,6 +20,13 @@ Dependencies
 
 NOTE: Building with Qt4 is still supported, however, could result in a broken UI. Building with Qt5 is recommended.
 
+Make sure you link boost if you have another version installed
+
+```
+    brew unlink boost
+    brew link boost@1.57 --force
+```
+
 Build MB8Coin Core
 ------------------------
 
