@@ -27,6 +27,7 @@ namespace Consensus { struct Params; };
 
 static const bool DEFAULT_PRINTPRIORITY = false;
 static const int DEFAULT_GENERATE_THREADS = 1;
+static bool fStaking;
 
 struct CBlockTemplate
 {
@@ -218,5 +219,8 @@ bool SignBlock(CBlock *pblock, CWallet& wallet, int64_t nFees);
 /** Check mined proof-of-stake block */
 bool CheckStake(CBlock* pblock, CWallet& wallet, const CChainParams& chainparams);
 void MB8CoinStaker(const CChainParams& chainparams);
+
+bool GetStaking();
+void SetStaking(bool mode);
 
 #endif // MB8COIN_MINER_H

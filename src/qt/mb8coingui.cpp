@@ -257,17 +257,10 @@ MB8CoinGUI::MB8CoinGUI(const PlatformStyle *platformStyle, const NetworkStyle *n
     }
     updatePrice();
 
-    if (GetBoolArg("-staking", true))
-    {
-        QTimer *timerStakingIcon = new QTimer(labelStakingIcon);
-        connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingStatus()));
-        timerStakingIcon->start(150 * 1000);
-        updateStakingStatus();
-    }
-    else
-    {
-        walletFrame->setStakingStatus(tr("Staking is turned off."));
-    }
+    QTimer *timerStakingIcon = new QTimer(labelStakingIcon);
+    connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingStatus()));
+    timerStakingIcon->start(150 * 1000);
+    updateStakingStatus();
 
     if (GetArg("-zapwallettxes",0) == 2 && GetArg("-repairwallet",0) == 1)
     {
@@ -359,23 +352,15 @@ void MB8CoinGUI::createActions()
     receiveCoinsMenuAction->setStatusTip(receiveCoinsAction->statusTip());
     receiveCoinsMenuAction->setToolTip(receiveCoinsMenuAction->statusTip());
 
+    toggleStakingAction = new QAction(tr("Toggle &Staking"), this);
+    toggleStakingAction->setStatusTip(tr("Toggle Staking"));
+
     historyAction = new QAction(platformStyle->SingleColorIcon(":/icons/history"), tr("&Transactions"), this);
     historyAction->setStatusTip(tr("Browse transaction history"));
     historyAction->setToolTip(historyAction->statusTip());
     historyAction->setCheckable(true);
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
-
-    if (GetBoolArg("-staking", true))
-    {
-      toggleStakingAction = new QAction(tr("Turn Off &Staking"), this);
-      toggleStakingAction->setStatusTip(tr("Turn Off Staking"));
-    }
-    else
-    {
-      toggleStakingAction = new QAction(tr("Turn On &Staking"), this);
-      toggleStakingAction->setStatusTip(tr("Turn On Staking"));
-    }
 
     connect(toggleStakingAction, SIGNAL(triggered()), this, SLOT(toggleStaking()));
 
@@ -399,16 +384,8 @@ void MB8CoinGUI::createActions()
     connect(receiveCoinsMenuAction, SIGNAL(triggered()), this, SLOT(gotoRequestPaymentPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
-    if (GetBoolArg("-staking", true))
-    {
-      toggleStakingAction = new QAction(tr("Turn Off &Staking"), this);
-      toggleStakingAction->setStatusTip(tr("Turn Off Staking"));
-    }
-    else
-    {
-      toggleStakingAction = new QAction(tr("Turn On &Staking"), this);
-      toggleStakingAction->setStatusTip(tr("Turn On Staking"));
-    }
+    connect(toggleStakingAction, SIGNAL(triggered()), this, SLOT(toggleStaking()));
+
 #endif // ENABLE_WALLET
 
     quitAction = new QAction(platformStyle->TextColorIcon(":/icons/quit"), tr("E&xit"), this);
@@ -483,7 +460,6 @@ void MB8CoinGUI::createActions()
         connect(unlockWalletAction, SIGNAL(triggered()), walletFrame, SLOT(unlockWalletStaking()));
         connect(backupWalletAction, SIGNAL(triggered()), walletFrame, SLOT(backupWallet()));
         connect(changePassphraseAction, SIGNAL(triggered()), walletFrame, SLOT(changePassphrase()));
-        connect(toggleStakingAction, SIGNAL(triggered()), this, SLOT(toggleStaking()));
         connect(signMessageAction, SIGNAL(triggered()), this, SLOT(gotoSignMessageTab()));
         connect(verifyMessageAction, SIGNAL(triggered()), this, SLOT(gotoVerifyMessageTab()));
         connect(usedSendingAddressesAction, SIGNAL(triggered()), walletFrame, SLOT(usedSendingAddresses()));
@@ -711,7 +687,7 @@ bool MB8CoinGUI::addWallet(const QString& name, WalletModel *walletModel)
 
 void MB8CoinGUI::startVotingCounter()
 {
-    if (GetBoolArg("-staking", true))
+    if (GetStaking())
     {
         QTimer *timerVotingIcon = new QTimer(labelStakingIcon);
         connect(timerVotingIcon, SIGNAL(timeout()), this, SLOT(getVotingInfo()));
@@ -1581,22 +1557,8 @@ void UnitDisplayStatusBarControl::onMenuSelection(QAction* action)
 
 void MB8CoinGUI::toggleStaking()
 {
-    bool deactivate = false;
-    if (GetBoolArg("-staking", true))
-    {
-        deactivate = true;
-    }
-    QMessageBox::StandardButton btnRetVal = QMessageBox::question(this, tr("Toggle staking"),
-        tr("Client restart required to ") + (deactivate?tr("deactivate"):tr("activate")) + tr(" staking.") + "<br><br>" + tr("Client will be shut down and should be started again. Do you want to proceed?"),
-        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
-
-    if(btnRetVal == QMessageBox::Cancel)
-        return;
-
-    RemoveConfigFile("staking",deactivate?"1":"0");
-    WriteConfigFile("staking",deactivate?"0":"1");
-
-    QApplication::quit();
+  SetStaking(!GetStaking());
+  Q_EMIT message(tr("Staking"), GetStaking() ? tr("Staking has been enabled") : tr("Staking has been disabled"),CClientUIInterface::MSG_INFORMATION);
 }
 
 #ifdef ENABLE_WALLET
@@ -1750,7 +1712,7 @@ void MB8CoinGUI::updateStakingStatus()
 
     if(walletFrame){
 
-        if (!GetBoolArg("-staking",true))
+        if (!GetStaking())
         {
             walletFrame->setStakingStatus(tr("Staking is turned off."));
             walletFrame->showLockStaking(false);
