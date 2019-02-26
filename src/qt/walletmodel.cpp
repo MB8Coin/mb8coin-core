@@ -316,7 +316,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
         CWalletTx *newTx;
         newTx = new CWalletTx();
 
-        fCreated = wallet->CreateTransaction(vec, *newTx, *keyChange, nFeeRequired, nChangePosRet, strFailReason, coinControl, true, rcp.strDZeel);
+        fCreated = wallet->CreateTransaction(vec, *newTx, *keyChange, nFeeRequired, nChangePosRet, strFailReason, coinControl, true);
         transaction.vTransactions.push_back(*newTx);
 
         transaction.setTransactionFee(nFeeRequired);
@@ -390,7 +390,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction &tran
           std::vector<CRecipient> vec;
           vec.push_back(rcp);
 
-          wallet->CreateTransaction(vec, *wTx, *keyChange, nFeeRequired, nChangePosRet, strFailReason, coinControl, true, rcp.strDZeel);
+          wallet->CreateTransaction(vec, *wTx, *keyChange, nFeeRequired, nChangePosRet, strFailReason, coinControl, true);
 
           if(!wallet->CommitTransaction(*wTx, *keyChange))
             return TransactionCommitFailed;

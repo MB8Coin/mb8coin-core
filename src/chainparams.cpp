@@ -27,7 +27,6 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
     // txNew.vout[0].scriptPubKey.clear();
     txNew.vout[0].nValue = genesisReward;
     txNew.vout[0].scriptPubKey.clear();
-    txNew.strDZeel = "MB8Coin genesis block";
 
     CBlock genesis;
     genesis.nTime    = nTime;

@@ -2595,7 +2595,7 @@ bool CWallet::FundTransaction(CMutableTransaction& tx, CAmount& nFeeRet, bool ov
 }
 
 bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet,
-                                int& nChangePosInOut, std::string& strFailReason, const CCoinControl* coinControl, bool sign, std::string strDZeel)
+                                int& nChangePosInOut, std::string& strFailReason, const CCoinControl* coinControl, bool sign)
 {
     CAmount nValue = 0;
     int nChangePosRequest = nChangePosInOut;
@@ -2627,20 +2627,6 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
     txNew.nVersion = CTransaction::TXDZEEL_VERSION;
 
     if(wtxNew.nCustomVersion > 0) txNew.nVersion = wtxNew.nCustomVersion;
-
-    /*
-    txNew.strDZeel = (wtxNew.strDZeel != "" ? wtxNew.strDZeel : strDZeel).length() > 0 ?
-                (wtxNew.strDZeel != "" ? wtxNew.strDZeel : strDZeel) :
-                mb8server.EncryptAddress(std::to_string(GetAdjustedTime() + (rand() % 1<<8)),sPubKey);
-                */
-
-    /*
-    if (strDZeel.length() > 0)
-      wtxNew.fAnon = true;
-
-    if (strDZeel.length() > 512)
-      txNew.strDZeel.resize(512);
-      */
 
     // Discourage fee sniping.
     //

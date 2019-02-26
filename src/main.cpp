@@ -2812,7 +2812,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             {
 
               nStakeReward = tx.GetValueOut() - view.GetValueIn(tx);
-              pindex->strDZeel = tx.strDZeel;
             }
 
             std::vector<CScriptCheck> vChecks;
@@ -3150,9 +3149,6 @@ void static UpdateTip(CBlockIndex *pindexNew, const CChainParams& chainParams) {
         for (int i = 0; i < 1000 && pindex != NULL; i++)
         {
             int32_t nExpectedVersion = CLIENT_VERSION;
-            if (atoi(pindex->strDZeel.substr(pindex->strDZeel.find(";") + 1).c_str()) > nExpectedVersion
-                    && pindex->strDZeel.find(';') != std::string::npos)
-                ++nUpgraded;
             pindex = pindex->pprev;
         }
         if (nUpgraded > 0)
@@ -4157,8 +4153,6 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
             UniValue metadata(UniValue::VARR);
             try {
                 UniValue valRequest;
-                if (!valRequest.read(block.vtx[0].strDZeel))
-                    isJson = false;
 
                 if (valRequest.isArray())
                     metadata = valRequest.get_array();

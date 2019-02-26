@@ -82,7 +82,6 @@ void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)
     entry.push_back(Pair("walletconflicts", conflicts));
     entry.push_back(Pair("time", wtx.GetTxTime()));
     entry.push_back(Pair("timereceived", (int64_t)wtx.nTimeReceived));
-    entry.push_back(Pair("anon-destination", wtx.strDZeel));
     // Add opt-in RBF status
     std::string rbfStatus = "no";
     if (confirms <= 0) {
@@ -341,7 +340,7 @@ UniValue getaddressesbyaccount(const JSONRPCRequest &request)
     return ret;
 }
 
-static void SendMoney(const CTxDestination &address, CAmount nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, std::string strDZeel = "", bool donate = false)
+static void SendMoney(const CTxDestination &address, CAmount nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, bool donate = false)
 {
     CAmount curBalance = pwalletMain->GetBalance();
 
@@ -368,7 +367,7 @@ static void SendMoney(const CTxDestination &address, CAmount nValue, bool fSubtr
     int nChangePosRet = -1;
     CRecipient recipient = {scriptPubKey, nValue, fSubtractFeeFromAmount, ""};
     vecSend.push_back(recipient);
-    if (!pwalletMain->CreateTransaction(vecSend, wtxNew, reservekey, nFeeRequired, nChangePosRet, strError, NULL, true, strDZeel)) {
+    if (!pwalletMain->CreateTransaction(vecSend, wtxNew, reservekey, nFeeRequired, nChangePosRet, strError, NULL, true)) {
         if (!fSubtractFeeFromAmount && nValue + nFeeRequired > pwalletMain->GetBalance())
             strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!", FormatMoney(nFeeRequired));
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
@@ -448,20 +447,13 @@ UniValue sendtoaddress(const JSONRPCRequest &request)
     if (request.params.size() > 3 && !request.params[3].isNull() && !request.params[3].get_str().empty())
         wtx.mapValue["to"] = request.params[3].get_str();
 
-    std::string strDZeel;
-
-    if (request.params.size() > 4 && !request.params[4].isNull() && !request.params[4].get_str().empty())
-        strDZeel = request.params[4].get_str();
-
     bool fSubtractFeeFromAmount = false;
     if (request.params.size() > 5)
         fSubtractFeeFromAmount = request.params[5].get_bool();
 
     EnsureWalletIsUnlocked();
 
-    wtx.strDZeel = strDZeel;
-
-    SendMoney(address.Get(), nAmount, fSubtractFeeFromAmount, wtx, strDZeel);
+    SendMoney(address.Get(), nAmount, fSubtractFeeFromAmount, wtx);
 
     return wtx.GetHash().GetHex();
 }

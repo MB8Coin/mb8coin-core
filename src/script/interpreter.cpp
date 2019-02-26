@@ -1141,8 +1141,6 @@ public:
              SerializeOutput(s, nOutput, nType, nVersion);
         // Serialize nLockTime
         ::Serialize(s, txTo.nLockTime, nType, nVersion);
-        // Serialize strDZeel
-        ::Serialize(s, txTo.strDZeel, nType, nVersion);
     }
 };
 

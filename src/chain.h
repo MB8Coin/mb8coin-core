@@ -214,8 +214,6 @@ public:
     int64_t nMint;
     int64_t nMoneySupply;
 
-    std::string strDZeel;
-
     unsigned int nFlags;  // ppcoin: block index flags
 
     uint64_t nStakeModifier; // hash modifier for proof-of-stake

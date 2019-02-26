@@ -63,7 +63,7 @@ std::string CTxOut::ToString() const
 CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nTime(0), nLockTime(0) {
   // *const_cast<unsigned int*>(&nTime) = GetTime();
 }
-CMutableTransaction::CMutableTransaction(const CTransaction& tx) : nVersion(tx.nVersion), nTime(tx.nTime), vin(tx.vin), vout(tx.vout), wit(tx.wit), nLockTime(tx.nLockTime), strDZeel(tx.strDZeel) {}
+CMutableTransaction::CMutableTransaction(const CTransaction& tx) : nVersion(tx.nVersion), nTime(tx.nTime), vin(tx.vin), vout(tx.vout), wit(tx.wit), nLockTime(tx.nLockTime) {}
 
 uint256 CMutableTransaction::GetHash() const
 {
@@ -84,7 +84,7 @@ CTransaction::CTransaction() : nVersion(CTransaction::CURRENT_VERSION), nTime(0)
     // *const_cast<unsigned int*>(&nTime) = GetTime();
 }
 
-CTransaction::CTransaction(const CMutableTransaction &tx) : nVersion(tx.nVersion), nTime(tx.nTime), vin(tx.vin), vout(tx.vout), wit(tx.wit), nLockTime(tx.nLockTime), strDZeel(tx.strDZeel) {
+CTransaction::CTransaction(const CMutableTransaction &tx) : nVersion(tx.nVersion), nTime(tx.nTime), vin(tx.vin), vout(tx.vout), wit(tx.wit), nLockTime(tx.nLockTime) {
     UpdateHash();
 }
 
@@ -96,7 +96,6 @@ CTransaction& CTransaction::operator=(const CTransaction &tx) {
     *const_cast<unsigned int*>(&nLockTime) = tx.nLockTime;
     *const_cast<uint256*>(&hash) = tx.hash;
     *const_cast<unsigned int*>(&nTime) = tx.nTime;
-    *const_cast<std::string*>(&strDZeel) = tx.strDZeel;
     return *this;
 }
 
@@ -142,14 +141,13 @@ std::string CTransaction::ToString() const
 {
       std::string str;
       str += IsCoinBase()? "Coinbase" : (IsCoinStake()? "Coinstake" : "CTransaction");
-      str += strprintf("(hash=%s, nTime=%d, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%d), strDZeel=%s)\n",
+      str += strprintf("(hash=%s, nTime=%d, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%d)\n",
           GetHash().ToString(),
           nTime,
           nVersion,
           vin.size(),
           vout.size(),
-          nLockTime,
-          strDZeel.substr(0,30).c_str()
+          nLockTime
   	);
     for (unsigned int i = 0; i < vin.size(); i++)
         str += "    " + vin[i].ToString() + "\n";
@@ -163,14 +161,13 @@ std::string CMutableTransaction::ToString() const
       std::string str;
       str += "Mutable";
       str += IsCoinBase()? "Coinbase" : (IsCoinStake()? "Coinstake" : "CTransaction");
-      str += strprintf("(hash=%s, nTime=%d, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%d), strDZeel=%s)\n",
+      str += strprintf("(hash=%s, nTime=%d, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%d)\n",
           GetHash().ToString(),
           nTime,
           nVersion,
           vin.size(),
           vout.size(),
-          nLockTime,
-          strDZeel.substr(0,30).c_str()
+          nLockTime
   	);
     for (unsigned int i = 0; i < vin.size(); i++)
         str += "    " + vin[i].ToString() + "\n";

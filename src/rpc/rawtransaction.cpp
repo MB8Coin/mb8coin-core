@@ -71,7 +71,6 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, UniValue&
     entry.push_back(Pair("vsize", (int)::GetVirtualTransactionSize(tx)));
     entry.push_back(Pair("version", tx.nVersion));
     entry.push_back(Pair("locktime", (int64_t)tx.nLockTime));
-    entry.push_back(Pair("anon-destination", tx.strDZeel));
     UniValue vin(UniValue::VARR);
     for (unsigned int i = 0; i < tx.vin.size(); i++) {
         const CTxIn& txin = tx.vin[i];
@@ -164,7 +163,6 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
     entry.push_back(Pair("version", tx.nVersion));
     entry.push_back(Pair("locktime", (int64_t)tx.nLockTime));
     entry.push_back(Pair("time", (int64_t)tx.nTime));
-    entry.push_back(Pair("anon-destination", tx.strDZeel));
 
     UniValue vin(UniValue::VARR);
     for (unsigned int i = 0; i < tx.vin.size(); i++) {
@@ -519,11 +517,6 @@ UniValue createrawtransaction(const JSONRPCRequest &request)
     UniValue sendTo = request.params[1].get_obj();
 
     CMutableTransaction rawTx;
-
-    if (request.params.size() > 2 && !request.params[2].isNull() && !request.params[2].get_str().empty()) {
-      rawTx.strDZeel = request.params[2].get_str();
-    }
-
     rawTx.nVersion = CTransaction::TXDZEEL_VERSION;
 
     if (request.params.size() > 3 && !request.params[3].isNull()) {
