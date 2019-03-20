@@ -2554,7 +2554,7 @@ bool CWallet::FundTransaction(CMutableTransaction& tx, CAmount& nFeeRet, bool ov
     // Turn the txout set into a CRecipient vector
     BOOST_FOREACH(const CTxOut& txOut, tx.vout)
     {
-        CRecipient recipient = {txOut.scriptPubKey, txOut.nValue, false, ""};
+        CRecipient recipient = {txOut.scriptPubKey, txOut.nValue, false};
         vecSend.push_back(recipient);
     }
 

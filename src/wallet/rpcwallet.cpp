@@ -365,7 +365,7 @@ static void SendMoney(const CTxDestination &address, CAmount nValue, bool fSubtr
     std::string strError;
     vector<CRecipient> vecSend;
     int nChangePosRet = -1;
-    CRecipient recipient = {scriptPubKey, nValue, fSubtractFeeFromAmount, ""};
+    CRecipient recipient = {scriptPubKey, nValue, fSubtractFeeFromAmount};
     vecSend.push_back(recipient);
     if (!pwalletMain->CreateTransaction(vecSend, wtxNew, reservekey, nFeeRequired, nChangePosRet, strError, NULL, true)) {
         if (!fSubtractFeeFromAmount && nValue + nFeeRequired > pwalletMain->GetBalance())
@@ -992,7 +992,7 @@ UniValue sendmany(const JSONRPCRequest &request)
                 fSubtractFeeFromAmount = true;
         }
 
-        CRecipient recipient = {scriptPubKey, nAmount, fSubtractFeeFromAmount, ""};
+        CRecipient recipient = {scriptPubKey, nAmount, fSubtractFeeFromAmount};
         vecSend.push_back(recipient);
     }
 

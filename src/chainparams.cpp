@@ -54,7 +54,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "25/07/2018 - Bitcoin Steady at $8,000";
+    const char* pszTimestamp = "26/02/2019 - Bitcoin has bottomed";
     const CScript genesisOutputScript = CScript() << ParseHex("04bf5608f13e9b2781b839ea78adbd1cb90d8fc17dcc67028e93e65223ea77f8bc8d8eed1191f37dd0ad20f371912d86e1c2e7369251cb06d2a3fdc5e26262d6df") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
@@ -141,12 +141,12 @@ public:
         nPruneAfterHeight = 100000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 16);
 
-        genesis = CreateGenesisBlock(1532526016, 90465, 0x1f00ffff, 1, 0);
+        genesis = CreateGenesisBlock(1551202849, 46433, 0x1f00ffff, 1, 0);
 
 	      consensus.hashGenesisBlock = genesis.GetHash();
 
-        assert(consensus.hashGenesisBlock == uint256S("0x0000090690745ed9ec57ea8339947ec13b70dd96b657518011e1b7cc302586ac"));
-        assert(genesis.hashMerkleRoot == uint256S("0x3e117f530223bc7ea00bfcb7ce69cbf25305784e3cc869f7b3e5729e412332aa"));
+        assert(consensus.hashGenesisBlock == uint256S("0x0000591f446a54e1e4a5a089c2ef83b6f027af75b8133e4a65e875fb960a37c2"));
+        assert(genesis.hashMerkleRoot == uint256S("0x23e76eef030d772e6292229a3ef77d9465d71db780f3fbf78e5b12f879a11d6b"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,85);
@@ -157,7 +157,7 @@ public:
         vFixedSeeds.clear();
       	vSeeds.clear();
 
-        vSeeds.emplace_back("vidaru", "mb8coin.seeds.vidaru.org");
+        //vSeeds.emplace_back("vidaru", "mb8coin.seeds.vidaru.org");
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;
