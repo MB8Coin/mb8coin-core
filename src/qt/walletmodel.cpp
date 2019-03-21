@@ -275,7 +275,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             ++nAddresses;
 
             CScript scriptPubKey = GetScriptForDestination(CMB8CoinAddress(rcp.isanon ? rcp.destaddress.toStdString() : rcp.address.toStdString()).Get());
-            CRecipient recipient = {scriptPubKey, !rcp.fSubtractFeeFromAmount && rcp.isanon ? rcp.amount + rcp.anonfee: rcp.amount, rcp.fSubtractFeeFromAmount, rcp.anondestination.toStdString()};
+            CRecipient recipient = {scriptPubKey, !rcp.fSubtractFeeFromAmount && rcp.isanon ? rcp.amount + rcp.anonfee: rcp.amount, rcp.fSubtractFeeFromAmount};
             vecSend.push_back(recipient);
 
             if(rcp.isanon)
