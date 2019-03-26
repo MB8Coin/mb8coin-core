@@ -2890,6 +2890,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         if (nStakeReward > nCalculatedStakeReward)
             return state.DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
+
+        pindex->nMoneySupply += nCalculatedStakeReward - nFees;
     }
 
     if (!control.Wait()){}
