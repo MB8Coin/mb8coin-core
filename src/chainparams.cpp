@@ -157,7 +157,7 @@ public:
         vFixedSeeds.clear();
       	vSeeds.clear();
 
-        //vSeeds.emplace_back("vidaru", "mb8coin.seeds.vidaru.org");
+        vSeeds.emplace_back("vidaru", "mb8coin.seeds.vidaru.org");
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;

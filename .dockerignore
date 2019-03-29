@@ -1,128 +1,129 @@
-*.tar.gz
+.git/
+**/*.tar.gz
 
-*.exe
-src/mb8coin
-src/mb8coind
-src/mb8coin-cli
-src/mb8coin-tx
-src/test/test_mb8coin
-src/qt/test/test_mb8coin-qt
-src/qt/ui_*.h
+**/*.exe
+**/src/mb8coin
+**/src/mb8coind
+**/src/mb8coin-cli
+**/src/mb8coin-tx
+**/src/test/test_mb8coin
+**/src/qt/test/test_mb8coin-qt
+**/src/qt/ui_*.h
 
-.\!*
+**/.\!*
 
 # autoreconf
-Makefile.in
-aclocal.m4
-autom4te.cache/
-build-aux/config.guess
-build-aux/config.sub
-build-aux/depcomp
-build-aux/install-sh
-build-aux/ltmain.sh
-build-aux/m4/libtool.m4
-build-aux/m4/lt~obsolete.m4
-build-aux/m4/ltoptions.m4
-build-aux/m4/ltsugar.m4
-build-aux/m4/ltversion.m4
-build-aux/missing
-build-aux/compile
-build-aux/test-driver
-config.log
-config.status
-configure
-libtool
-src/config/mb8coin-config.h
-src/config/mb8coin-config.h.in
-src/config/stamp-h1
-share/setup.nsi
-share/qt/Info.plist
+**/Makefile.in
+**/aclocal.m4
+**/autom4te.cache/
+**/build-aux/config.guess
+**/build-aux/config.sub
+**/build-aux/depcomp
+**/build-aux/install-sh
+**/build-aux/ltmain.sh
+**/build-aux/m4/libtool.m4
+**/build-aux/m4/lt~obsolete.m4
+**/build-aux/m4/ltoptions.m4
+**/build-aux/m4/ltsugar.m4
+**/build-aux/m4/ltversion.m4
+**/build-aux/missing
+**/build-aux/compile
+**/build-aux/test-driver
+**/config.log
+**/config.status
+**/configure
+**/libtool
+**/src/config/mb8coin-config.h
+**/src/config/mb8coin-config.h.in
+**/src/config/stamp-h1
+**/share/setup.nsi
+**/share/qt/Info.plist
 
-src/univalue/gen
+**/src/univalue/gen
 
-src/qt/*.moc
-src/qt/moc_*.cpp
-src/qt/forms/ui_*.h
+**/src/qt/*.moc
+**/src/qt/moc_*.cpp
+**/src/qt/forms/ui_*.h
 
-src/qt/test/moc*.cpp
+**/src/qt/test/moc*.cpp
 
-.deps
-.dirstamp
-.libs
-.*.swp
-*.*~*
-*.bak
-*.rej
-*.orig
-*.pyc
-*.o
-*.o-*
-*.patch
-.mb8coin
-*.a
-*.pb.cc
-*.pb.h
+**/.deps
+**/.dirstamp
+**/.libs
+**/.*.swp
+**/*.*~*
+**/*.bak
+**/*.rej
+**/*.orig
+**/*.pyc
+**/*.o
+**/*.o-*
+**/*.patch
+**/.mb8coin
+**/*.a
+**/*.pb.cc
+**/*.pb.h
 
-*.log
-*.trs
-*.dmg
+**/*.log
+**/*.trs
+**/*.dmg
 
-*.json.h
-*.raw.h
+**/*.json.h
+**/*.raw.h
 
 #libtool object files
-*.lo
-*.la
+**/*.lo
+**/*.la
 
 # Compilation and Qt preprocessor part
-*.qm
-Makefile
-mb8coin-qt
-mb8coin-Qt.app
-MB8Coin-Qt.app
-MB8Coin\ Core.app
+**/*.qm
+**/Makefile
+**/mb8coin-qt
+**/mb8coin-Qt.app
+**/MB8Coin-Qt.app
+**/MB8Coin\ Core.app
 
 
 # Unit-tests
-Makefile.test
-mb8coin-qt_test
-src/test/buildenv.py
+**/Makefile.test
+**/mb8coin-qt_test
+**/src/test/buildenv.py
 
 # Resources cpp
-qrc_*.cpp
+**/qrc_*.cpp
 
 # Mac specific
-.DS_Store
-build
+**/.DS_Store
+**/build
 
 #lcov
-*.gcno
-*.gcda
-/*.info
-test_mb8coin.coverage/
-total.coverage/
-coverage_percent.txt
+**/*.gcno
+**/*.gcda
+*.info
+**/test_mb8coin.coverage/
+**/total.coverage/
+**/coverage_percent.txt
 
 #build tests
-linux-coverage-build
-linux-build
-win32-build
-qa/pull-tester/run-mb8coind-for-test.sh
-qa/pull-tester/tests_config.py
-qa/pull-tester/cache/*
-qa/pull-tester/test.*/*
-qa/tmp
-cache/
-share/NavcoindComparisonTool.jar
+**/linux-coverage-build
+**/linux-build
+**/win32-build
+**/qa/pull-tester/run-mb8coind-for-test.sh
+**/qa/pull-tester/tests_config.py
+**/qa/pull-tester/cache/*
+**/qa/pull-tester/test.*/*
+**/qa/tmp
+**/cache/
+**/share/NavcoindComparisonTool.jar
 
-!src/leveldb*/Makefile
-!depends/Makefile
-!depends/patches/**/*
+!**/src/leveldb*/Makefile
+!**/depends/Makefile
+!**/depends/patches/**/*
 
-/doc/doxygen/
+doc/doxygen/
 
-libmb8coinconsensus.pc
-contrib/devtools/split-debug.sh
+**/libmb8coinconsensus.pc
+**/contrib/devtools/split-debug.sh
 
 src/config/mb8coin-config.h.in
 src/secp256k1/build-aux/config.guess
@@ -139,3 +140,37 @@ src/secp256k1/build-aux/depcomp
 src/secp256k1/build-aux/missing
 src/secp256k1/build-aux/test-driver
 src/MB8Coin4-Qt.creator.user
+
+src/univalue/.git/
+src/univalue/.deps/
+src/univalue/INSTALL
+src/univalue/Makefile
+src/univalue/Makefile.in
+src/univalue/aclocal.m4
+src/univalue/autom4te.cache/
+src/univalue/compile
+src/univalue/config.log
+src/univalue/config.status
+src/univalue/config.guess
+src/univalue/config.sub
+src/univalue/configure
+src/univalue/depcomp
+src/univalue/install-sh
+src/univalue/missing
+src/univalue/stamp-h1
+src/univalue/univalue-config.h*
+src/univalue/test-driver
+src/univalue/libtool
+src/univalue/ltmain.sh
+src/univalue/test-suite.log
+
+src/univalue/*.a
+src/univalue/*.la
+src/univalue/*.lo
+src/univalue/*.logs
+src/univalue/*.o
+src/univalue/*.pc
+src/univalue/*.trs
+
+src/univalue/.dirstamp
+src/univalue/.libs
