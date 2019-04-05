@@ -27,7 +27,7 @@ namespace Consensus { struct Params; };
 
 static const bool DEFAULT_PRINTPRIORITY = false;
 static const int DEFAULT_GENERATE_THREADS = 1;
-static bool fStaking;
+static bool fStaking = true;
 
 struct CBlockTemplate
 {

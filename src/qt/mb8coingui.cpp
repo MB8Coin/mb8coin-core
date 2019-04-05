@@ -354,6 +354,8 @@ void MB8CoinGUI::createActions()
 
     toggleStakingAction = new QAction(tr("Toggle &Staking"), this);
     toggleStakingAction->setStatusTip(tr("Toggle Staking"));
+    toggleStakingAction->setCheckable(true);
+    toggleStakingAction->setChecked(GetStaking());
 
     historyAction = new QAction(platformStyle->SingleColorIcon(":/icons/history"), tr("&Transactions"), this);
     historyAction->setStatusTip(tr("Browse transaction history"));
@@ -361,8 +363,6 @@ void MB8CoinGUI::createActions()
     historyAction->setCheckable(true);
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
-
-    connect(toggleStakingAction, SIGNAL(triggered()), this, SLOT(toggleStaking()));
 
     updatePriceAction  = new QAction(tr("Update exchange prices"), this);
     updatePriceAction->setStatusTip(tr("Update exchange prices"));
@@ -1558,6 +1558,7 @@ void UnitDisplayStatusBarControl::onMenuSelection(QAction* action)
 void MB8CoinGUI::toggleStaking()
 {
   SetStaking(!GetStaking());
+  toggleStakingAction->setChecked(GetStaking());
   Q_EMIT message(tr("Staking"), GetStaking() ? tr("Staking has been enabled") : tr("Staking has been disabled"),CClientUIInterface::MSG_INFORMATION);
 }
 

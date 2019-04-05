@@ -101,6 +101,8 @@
     <string>True</string>
   
   <key>LSApplicationCategoryType</key>
-    <string>public.app-category.finance</string>
+  <string>public.app-category.finance</string>
+	<key>NSRequiresAquaSystemAppearance</key>
+	<true/>
 </dict>
 </plist>
