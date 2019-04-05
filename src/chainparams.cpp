@@ -54,7 +54,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "26/02/2019 - Bitcoin has bottomed";
+    const char* pszTimestamp = "BBC 5/Apr/2019 UK seeks new Brexit delay until 30 June";
     const CScript genesisOutputScript = CScript() << ParseHex("04bf5608f13e9b2781b839ea78adbd1cb90d8fc17dcc67028e93e65223ea77f8bc8d8eed1191f37dd0ad20f371912d86e1c2e7369251cb06d2a3fdc5e26262d6df") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
@@ -92,9 +92,9 @@ public:
         consensus.nPowTargetSpacing = 30;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 15120; // 75% of 20160
-        consensus.nMinerConfirmationWindow = 20160;
-        consensus.nStakeMinAge = 60 * 60 * 4;	// minimum for coin age: 2 hours
+        consensus.nRuleChangeActivationThreshold = 3780; // 75% of 5040
+        consensus.nMinerConfirmationWindow = 5040;
+        consensus.nStakeMinAge = 60 * 60 * 4;	// minimum for coin age: 4 hours
         consensus.nTargetSpacing = 120; // Blocktime: 2 minutes
         consensus.nStakeCombineThreshold = 1000 * COIN;
         consensus.nStakeSplitThreshold = 2 * consensus.nStakeCombineThreshold;
@@ -111,22 +111,22 @@ public:
 
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1462060800; // May 1st, 2016
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1525132800; // May 1st, 2017
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1554076800; // April 1st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1585699200; // April 1st, 2020
 
         // Deployment of SegWit (BIP141 and BIP143)
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1493424000; // May 1st, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1525132800; // May 1st, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 3;
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1554076800; // April 1st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1585699200; // April 1st, 2020
 
         // Deployment of SegWit (BIP141 and BIP143)
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT_LEGACY].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT_LEGACY].nStartTime = 1493424000; // May 1st, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT_LEGACY].nTimeout = 1525132800; // May 1st, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT_LEGACY].nStartTime = 1554076800; // April 1st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT_LEGACY].nTimeout = 1585699200; // April 1st, 2020
 
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].bit = 2;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].nStartTime = 1462060800; // May 1st, 2016
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].nTimeout = 1525132800; // May 1st, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].nStartTime = 1554076800; // April 1st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].nTimeout = 1585699200; // April 1st, 2020
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -141,12 +141,12 @@ public:
         nPruneAfterHeight = 100000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 16);
 
-        genesis = CreateGenesisBlock(1551202849, 46433, 0x1f00ffff, 1, 0);
+        genesis = CreateGenesisBlock(1554484922, 86928, 0x1f00ffff, 1, 0);
 
 	      consensus.hashGenesisBlock = genesis.GetHash();
 
-        assert(consensus.hashGenesisBlock == uint256S("0x0000591f446a54e1e4a5a089c2ef83b6f027af75b8133e4a65e875fb960a37c2"));
-        assert(genesis.hashMerkleRoot == uint256S("0x23e76eef030d772e6292229a3ef77d9465d71db780f3fbf78e5b12f879a11d6b"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00007248c6b68dc6dd0b0f363ca58822167e78b4535dff1cf48b4de7aa0ccf72"));
+        assert(genesis.hashMerkleRoot == uint256S("0x228a9297e68d69527d8c405b9a4a639786418ec103a406e3b2e36e9ebf0e7d74"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,85);
