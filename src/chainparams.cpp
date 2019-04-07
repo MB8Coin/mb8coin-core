@@ -221,11 +221,6 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1493424000; // May 1st, 2017
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1525132800; // May 1st, 2018
 
-        // Deployment of Community Fund
-        consensus.vDeployments[Consensus::DEPLOYMENT_COMMUNITYFUND].bit = 6;
-        consensus.vDeployments[Consensus::DEPLOYMENT_COMMUNITYFUND].nStartTime = 1493424000; // May 1st, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_COMMUNITYFUND].nTimeout = 1525132800; // May 1st, 2018
-
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
@@ -239,10 +234,10 @@ public:
         nPruneAfterHeight = 1000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 16);
 
-        genesis = CreateGenesisBlockTestnet(1512566756, 2042989216, 0x1d00ffff, 1, 0);
+        genesis = CreateGenesisBlockTestnet(1512566756, 57676, 0x1f00ffff, 1, 0);
         consensus.hashGenesisBlock = genesis.GetHash();
 
-        uint256 hashGenesisBlock = uint256S("0x00005befcbbc049b34348f568a81abcf3cddedbedd8f08a09bf62391cb70f2e2");
+        uint256 hashGenesisBlock = uint256S("0x00000f5872f0ded89111ba62d16dbb59712dc2161267af2e426211bc8fa75efd");
 
         if (true && (genesis.GetHash() != hashGenesisBlock || genesis.hashMerkleRoot != uint256S("0x472868bc7686c2f3e852eb12ab1757c9f2b2848f13ad7f7b848eef70c3f86fdd")))
         {
@@ -259,7 +254,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
 
-        assert(consensus.hashGenesisBlock == uint256S("0x00005befcbbc049b34348f568a81abcf3cddedbedd8f08a09bf62391cb70f2e2"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00000f5872f0ded89111ba62d16dbb59712dc2161267af2e426211bc8fa75efd"));
         assert(genesis.hashMerkleRoot == uint256S("0x472868bc7686c2f3e852eb12ab1757c9f2b2848f13ad7f7b848eef70c3f86fdd"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,54);
@@ -270,7 +265,7 @@ public:
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
-        fMiningRequiresPeers = true;
+        fMiningRequiresPeers = false;
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;
         fMineBlocksOnDemand = false;

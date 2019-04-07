@@ -2854,7 +2854,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         CAmount nProposalFee = 0;
 
         if (tx.IsCoinBase()) {
-          pindex->nMoneySupply += tx.GetValueOut();
+          pindex->nMoneySupply += GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
         }
 
         CTxUndo undoDummy;
