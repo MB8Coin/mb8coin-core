@@ -208,7 +208,8 @@ public:
         consensus.nDailyBlockCount =  (24 * 60 * 60) / consensus.nTargetSpacing;
         consensus.nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
         consensus.nTargetTimespan = 25 * 30;
-        consensus.nLastPOWBlock = 100000;
+        consensus.nLastPOWBlock = 1000;
+        consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512826692;
 
         // Deployment of BIP68, BIP112, and BIP113.
