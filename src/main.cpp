@@ -2853,7 +2853,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         CAmount nProposalFee = 0;
 
-        if (tx.IsCoinBase()) {
+        if (tx.IsCoinBase() && block.IsProofOfWork()) {
           pindex->nMoneySupply += GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
         }
 
