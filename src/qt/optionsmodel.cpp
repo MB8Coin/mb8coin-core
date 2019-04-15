@@ -57,7 +57,7 @@ void OptionsModel::Init(bool resetSettings)
         settings.setValue("fHideTrayIcon", false);
     fHideTrayIcon = settings.value("fHideTrayIcon").toBool();
     Q_EMIT hideTrayIconChanged(fHideTrayIcon);
-    
+
     if (!settings.contains("fMinimizeToTray"))
         settings.setValue("fMinimizeToTray", false);
     fMinimizeToTray = settings.value("fMinimizeToTray").toBool() && !fHideTrayIcon;
@@ -77,8 +77,8 @@ void OptionsModel::Init(bool resetSettings)
     nDisplayUnit = settings.value("nDisplayUnit").toInt();
 
     if (!settings.contains("strThirdPartyTxUrls"))
-        settings.setValue("strThirdPartyTxUrls", "https://chainz.cryptoid.info/nav/tx.dws?%s.htm");
-    strThirdPartyTxUrls = settings.value("strThirdPartyTxUrls", "https://chainz.cryptoid.info/nav/tx.dws?%s.htm").toString();
+        settings.setValue("strThirdPartyTxUrls", "https://explorer.mb8coin.valar.io/tx/%s");
+    strThirdPartyTxUrls = settings.value("strThirdPartyTxUrls", "https://explorer.mb8coin.valar.io/tx/%s").toString();
 
     if (!settings.contains("fCoinControlFeatures"))
         settings.setValue("fCoinControlFeatures", false);
