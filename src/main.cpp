@@ -7482,16 +7482,19 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
 
     if (nActualSpacing < 0)
-        nActualSpacing = Params().GetConsensus().nTargetSpacing;
+        nActualSpacing = fProofOfStake ? Params().GetConsensus().nTargetSpacing : Params().GetConsensus().nPowTargetSpacing;
 
     // ppcoin: target change every block
     // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
 
-    CBigNum nInterval = (Params().GetConsensus().nTargetTimespan) / (Params().GetConsensus().nTargetSpacing);
-    bnNew *= (((nInterval - 1)) * (Params().GetConsensus().nTargetSpacing) + (nActualSpacing) + (nActualSpacing));
-    bnNew /= (((nInterval + 1)) * (Params().GetConsensus().nTargetSpacing));
+    const auto nTargetSpacing = fProofOfStake ? Params().GetConsensus().nTargetSpacing : Params().GetConsensus().nPowTargetSpacing;
+    const auto nTargetTimespan = fProofOfStake ? Params().GetConsensus().nTargetTimespan : Params().GetConsensus().nPowTargetTimespan;
+
+    CBigNum nInterval = (nTargetTimespan) / (nTargetSpacing);
+    bnNew *= (((nInterval - 1)) * (nTargetSpacing) + (nActualSpacing) + (nActualSpacing));
+    bnNew /= (((nInterval + 1)) * (nTargetSpacing));
 
     if (bnNew <= 0 || bnNew > bnTargetLimit)
         bnNew = bnTargetLimit;
