@@ -88,7 +88,7 @@ public:
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256S("0x000005ab732033d555115e008435629fb9917bae8389369477e51974f38b4e9d");
         consensus.powLimit = ArithToUint256(~arith_uint256(0) >> 12);
-        consensus.nPowTargetTimespan = 30;
+        consensus.nPowTargetTimespan = 30 * 1000;
         consensus.nPowTargetSpacing = 30;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
@@ -141,12 +141,12 @@ public:
         nPruneAfterHeight = 100000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 12);
 
-        genesis = CreateGenesisBlock(1555600442, 1479, 0x1f0ffff0, 1, 0);
+        genesis = CreateGenesisBlock(1555623620, 985, 0x1f0ffff0, 1, 0);
 
 	      consensus.hashGenesisBlock = genesis.GetHash();
 
-        assert(consensus.hashGenesisBlock == uint256S("0x00010d911b50ea02cd1adb12058eb51ed54022273c1a12bbddf87c1af9dd7bc5"));
-        assert(genesis.hashMerkleRoot == uint256S("0xa94537166b1b1aba8aed450af0527b5e87629b698ba36a57a0b1a1b739af61e7"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00070d0f3eca94378b015d3347fd59ddc965db57480b04706f4a4a9bd0816f97"));
+        assert(genesis.hashMerkleRoot == uint256S("0x2445f0acb471830860cf0357b1615244333efb62831976f4bfd12e36bd55af84"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,85);
