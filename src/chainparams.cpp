@@ -54,7 +54,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "BBC 5/Apr/2019 UK seeks new Brexit delay until 30 June";
+    const char* pszTimestamp = "BBC 18/Apr/2019 Notre-Dame fire: How new tech might help the rebuild";
     const CScript genesisOutputScript = CScript() << ParseHex("04bf5608f13e9b2781b839ea78adbd1cb90d8fc17dcc67028e93e65223ea77f8bc8d8eed1191f37dd0ad20f371912d86e1c2e7369251cb06d2a3fdc5e26262d6df") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
@@ -141,12 +141,12 @@ public:
         nPruneAfterHeight = 100000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 16);
 
-        genesis = CreateGenesisBlock(1554484922, 86928, 0x1f00ffff, 1, 0);
+        genesis = CreateGenesisBlock(1555600442, 16555, 0x1f00ffff, 1, 0);
 
 	      consensus.hashGenesisBlock = genesis.GetHash();
 
-        assert(consensus.hashGenesisBlock == uint256S("0x00007248c6b68dc6dd0b0f363ca58822167e78b4535dff1cf48b4de7aa0ccf72"));
-        assert(genesis.hashMerkleRoot == uint256S("0x228a9297e68d69527d8c405b9a4a639786418ec103a406e3b2e36e9ebf0e7d74"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00005da721d8cd172b7f815ef6ef6b6c4fe778655fb7e0f4672d6638026a59c1"));
+        assert(genesis.hashMerkleRoot == uint256S("0xa94537166b1b1aba8aed450af0527b5e87629b698ba36a57a0b1a1b739af61e7"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,50);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,85);
