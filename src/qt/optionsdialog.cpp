@@ -123,7 +123,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
         }
     }
 #if QT_VERSION >= 0x040700
-    ui->thirdPartyTxUrls->setPlaceholderText("https://explorer.mb8coin.valar.io/tx/%s");
+    ui->thirdPartyTxUrls->setPlaceholderText("https://explorer.mb8coin.io/tx/%s");
 #endif
 
     ui->unit->setModel(new MB8CoinUnits(this));
