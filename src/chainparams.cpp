@@ -104,6 +104,7 @@ public:
         consensus.nLastPOWBlock = 1000;
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512990000;
+        consensus.burnAddress = "MB8CoinBurnAddressXXXXXXXXXXUgsoVp";
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
@@ -191,8 +192,8 @@ public:
         consensus.nMajorityWindow = 1000;
         consensus.BIP34Height = 900000;
         consensus.BIP34Hash = uint256S("0xecb7444214d068028ec1fa4561662433452c1cbbd6b0f8eeb6452bcfa1d0a7d6");
-        consensus.powLimit = ArithToUint256(~arith_uint256(0) >> 16);
-        consensus.nPowTargetTimespan = 30;
+        consensus.powLimit = ArithToUint256(~arith_uint256(0) >> 12);
+        consensus.nPowTargetTimespan = 30 * 1000;
         consensus.nPowTargetSpacing = 30;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
@@ -211,6 +212,7 @@ public:
         consensus.nLastPOWBlock = 1000;
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512826692;
+        consensus.burnAddress = "NmB8CoinBurnAddressXXXXXXXXXTmx1mV";
 
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
@@ -235,10 +237,10 @@ public:
         nPruneAfterHeight = 1000;
         bnProofOfWorkLimit = arith_uint256(~arith_uint256() >> 16);
 
-        genesis = CreateGenesisBlockTestnet(1512566756, 57676, 0x1f00ffff, 1, 0);
+        genesis = CreateGenesisBlockTestnet(1512566756, 4966, 0x1f0ffff0, 1, 0);
         consensus.hashGenesisBlock = genesis.GetHash();
 
-        uint256 hashGenesisBlock = uint256S("0x00000f5872f0ded89111ba62d16dbb59712dc2161267af2e426211bc8fa75efd");
+        uint256 hashGenesisBlock = uint256S("0x000db517cc73705883e61f29c3b87404209d64e662f141b9afe095d7e69124be");
 
         if (true && (genesis.GetHash() != hashGenesisBlock || genesis.hashMerkleRoot != uint256S("0x472868bc7686c2f3e852eb12ab1757c9f2b2848f13ad7f7b848eef70c3f86fdd")))
         {
@@ -255,7 +257,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
 
-        assert(consensus.hashGenesisBlock == uint256S("0x00000f5872f0ded89111ba62d16dbb59712dc2161267af2e426211bc8fa75efd"));
+        assert(consensus.hashGenesisBlock == uint256S("0x000db517cc73705883e61f29c3b87404209d64e662f141b9afe095d7e69124be"));
         assert(genesis.hashMerkleRoot == uint256S("0x472868bc7686c2f3e852eb12ab1757c9f2b2848f13ad7f7b848eef70c3f86fdd"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,54);
@@ -323,6 +325,7 @@ public:
         consensus.nTargetTimespan = 25 * 30;
         consensus.nLastPOWBlock = 20000;
         consensus.sigActivationTime = 0;
+        consensus.burnAddress = "MB8CoinBurnAddressXXXXXXXXXXUgsoVp";
 
         pchMessageStart[0] = 0xf9;
         pchMessageStart[1] = 0xef;

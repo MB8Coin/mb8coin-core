@@ -213,6 +213,7 @@ public:
 
     int64_t nMint;
     int64_t nMoneySupply;
+    int64_t nBurntSupply;
 
     unsigned int nFlags;  // ppcoin: block index flags
 
@@ -243,9 +244,10 @@ public:
         nStatus = 0;
         nMint = 0;
         nMoneySupply = 0;
+        nBurntSupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
-	      hashProof = arith_uint256();
+        hashProof = arith_uint256();
         prevoutStake.SetNull();
         nStakeTime = 0;
         nVersion       = 0;
@@ -469,7 +471,7 @@ public:
 
     CDiskBlockIndex() {
         hashPrev = uint256();
-	      hashNext = uint256();
+        hashNext = uint256();
         blockHash = uint256();
     }
 
@@ -516,6 +518,7 @@ public:
         READWRITE(nNonce);
         READWRITE(blockHash);
         READWRITE(nMoneySupply);
+        READWRITE(nBurntSupply);
     }
 
     uint256 GetBlockHash() const

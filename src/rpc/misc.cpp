@@ -92,7 +92,8 @@ UniValue getinfo(const JSONRPCRequest &request)
     }
 #endif
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
-    obj.push_back(Pair("moneysupply", ValueFromAmount(pindexBestHeader->nMoneySupply))); 
+    obj.push_back(Pair("moneysupply", ValueFromAmount(pindexBestHeader->nMoneySupply)));
+    obj.push_back(Pair("burntsupply", ValueFromAmount(pindexBestHeader->nBurntSupply)));
 
     obj.push_back(Pair("timeoffset",    GetTimeOffset()));
     obj.push_back(Pair("connections",   (int)vNodes.size()));

@@ -2531,6 +2531,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     AssertLockHeld(cs_main);
 
     pindex->nMoneySupply = pindex->pprev != NULL ? pindex->pprev->nMoneySupply : 0;
+    pindex->nBurntSupply = pindex->pprev != NULL ? pindex->pprev->nBurntSupply : 0;
 
     if (block.IsProofOfStake())
     {
@@ -2590,8 +2591,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     {
         hashProof = UintToArith256(block.GetPoWHash());
     }
-
-
 
     if (!pindex->SetStakeEntropyBit(block.GetStakeEntropyBit()))
         return state.DoS(1,error("ContextualCheckBlock() : SetStakeEntropyBit() failed"), REJECT_INVALID, "bad-entropy-bit");
@@ -2848,6 +2847,24 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                     continue;
                 }
 
+            }
+        }
+
+        for (auto & out : tx.vout) {
+            if (out.scriptPubKey.IsPayToScriptHash()) {
+                vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
+                auto address = CMB8CoinAddress(CScriptID(uint160(hashBytes)));
+                if (chainparams.GetConsensus().burnAddress == address.ToString()) {
+                    pindex->nBurntSupply += out.nValue;
+                }
+            } else if (out.scriptPubKey.IsPayToPublicKeyHash()) {
+                vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
+                auto address = CMB8CoinAddress(CKeyID(uint160(hashBytes)));
+                if (chainparams.GetConsensus().burnAddress == address.ToString()) {
+                    pindex->nBurntSupply += out.nValue;
+                }
+            } else {
+                continue;
             }
         }
 
@@ -6057,7 +6074,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CTransaction tx;
         vRecv >> tx;
 
-	LogPrint("net", "Received tx %s peer=%d\n%s\n", tx.GetHash().ToString(), pfrom->id, tx.ToString());
+    LogPrint("net", "Received tx %s peer=%d\n%s\n", tx.GetHash().ToString(), pfrom->id, tx.ToString());
 
         CInv inv(MSG_TX, tx.GetHash());
         pfrom->AddInventoryKnown(inv);
