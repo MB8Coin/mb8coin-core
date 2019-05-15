@@ -105,6 +105,7 @@ public:
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512990000;
         consensus.burnAddress = "MB8CoinBurnAddressXXXXXXXXXXUgsoVp";
+        consensus.nRewardChangeHeight = -1;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
@@ -213,6 +214,7 @@ public:
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512826692;
         consensus.burnAddress = "NmB8CoinBurnAddressXXXXXXXXXTmx1mV";
+        consensus.nRewardChangeHeight = 5000;
 
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
