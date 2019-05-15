@@ -83,15 +83,20 @@ double GetPoSKernelPS()
 
 int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlockIndex* pindexPrev)
 {
-    int64_t nRewardCoinBlock;
-
-    if(nHeight - 1 < 30 * 8 * Params().GetConsensus().nDailyBlockCount) {
-        nRewardCoinBlock = 380;
+    auto consensus = Params().GetConsensus();
+    int64_t nSubsidy;
+    if (consensus.nRewardChangeHeight < 0 || nHeight < consensus.nRewardChangeHeight) {
+        nSubsidy = 190 * COIN;
     } else {
-        nRewardCoinBlock = 190;
+        int64_t circulating = pindexPrev->nMoneySupply - pindexPrev->nBurntSupply;
+        int nBlocksPerYear = Params().GetConsensus().nDailyBlockCount * 365;
+        double nPercentageIncrease = 0.015;
+        nSubsidy = (circulating * nPercentageIncrease) / nBlocksPerYear;
     }
 
-    int64_t nSubsidy = nRewardCoinBlock * COIN;
+    if (nHeight - 1 < 30 * 7 * Params().GetConsensus().nDailyBlockCount) {
+        nSubsidy *= 2;
+    }
 
     return  nSubsidy + nFees;
 }

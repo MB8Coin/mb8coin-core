@@ -79,6 +79,9 @@ struct Params {
     int64_t sigActivationTime;
     std::string burnAddress;
 
+    /** Hard fork parameters */
+    int nRewardChangeHeight;
+
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
 };
 } // namespace Consensus
