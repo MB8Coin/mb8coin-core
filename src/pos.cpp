@@ -87,15 +87,14 @@ int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlo
     int64_t nSubsidy;
     if (consensus.nRewardChangeHeight < 0 || nHeight < consensus.nRewardChangeHeight) {
         nSubsidy = 190 * COIN;
+        if (nHeight - 1 < 30 * 7 * Params().GetConsensus().nDailyBlockCount) {
+          nSubsidy *= 2;
+        }
     } else {
         int64_t circulating = pindexPrev->nMoneySupply - pindexPrev->nBurntSupply;
         int nBlocksPerYear = Params().GetConsensus().nDailyBlockCount * 365;
         double nPercentageIncrease = 0.015;
         nSubsidy = (circulating * nPercentageIncrease) / nBlocksPerYear;
-    }
-
-    if (nHeight - 1 < 30 * 7 * Params().GetConsensus().nDailyBlockCount) {
-        nSubsidy *= 2;
     }
 
     return  nSubsidy + nFees;
