@@ -204,17 +204,17 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
         consensus.nStakeMinAge = 2;	// minimum for coin age: 2 seconds
-        consensus.nTargetSpacing = 30; // Blocktime: 30 secs
+        consensus.nTargetSpacing = 120; // Blocktime: 2 minutes
         consensus.nStakeCombineThreshold = 1000 * COIN;
         consensus.nStakeSplitThreshold = 2 * consensus.nStakeCombineThreshold;
         consensus.nDailyBlockCount =  (24 * 60 * 60) / consensus.nTargetSpacing;
         consensus.nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
-        consensus.nTargetTimespan = 25 * 30;
+        consensus.nTargetTimespan = 50 * 30;
         consensus.nLastPOWBlock = 1000;
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512826692;
         consensus.burnAddress = "NmB8CoinBurnAddressXXXXXXXXXTmx1mV";
-        consensus.nRewardChangeHeight = 5000;
+        consensus.nRewardChangeHeight = 1500;
 
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
