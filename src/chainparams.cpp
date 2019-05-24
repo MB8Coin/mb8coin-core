@@ -105,7 +105,7 @@ public:
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512990000;
         consensus.burnAddress = "MB8CoinBurnAddressXXXXXXXXXXUgsoVp";
-        consensus.nRewardChangeHeight = -1;
+        consensus.nRewardChangeHeight = 35000;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
