@@ -707,9 +707,9 @@ void MB8CoinStaker(const CChainParams& chainparams)
                 CheckStake(pblock, *pwalletMain, chainparams);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
                 MilliSleep(500);
-            }
-            else
+            } else {
                 MilliSleep(nMinerSleep);
+            }
 
         }
     }
@@ -746,7 +746,8 @@ bool SignBlock(CBlock *pblock, CWallet& wallet, int64_t nFees)
   CKey key;
   CMutableTransaction txCoinStake;
   CTransaction txNew;
-  int nBestHeight = pindexBestHeader->nHeight;
+  auto bestHeader = chainActive.Tip();
+  int nBestHeight = bestHeader->nHeight;
 
   txCoinStake.nTime = GetAdjustedTime();
   txCoinStake.nTime &= ~STAKE_TIMESTAMP_MASK;
@@ -755,12 +756,11 @@ bool SignBlock(CBlock *pblock, CWallet& wallet, int64_t nFees)
 
   if (nSearchTime > nLastCoinStakeSearchTime)
   {
-
       int64_t nSearchInterval = nBestHeight+1 > 0 ? 1 : nSearchTime - nLastCoinStakeSearchTime;
       if (wallet.CreateCoinStake(wallet, pblock->nBits, nSearchInterval, nFees, txCoinStake, key))
       {
 
-          if (txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit()+1)
+          if (txCoinStake.nTime >= bestHeader->GetPastTimeLimit()+1)
           {
               // make sure coinstake would meet timestamp protocol
               //    as it would be the same as the block timestamp
@@ -806,7 +806,6 @@ bool SignBlock(CBlock *pblock, CWallet& wallet, int64_t nFees)
       nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
       nLastCoinStakeSearchTime = nSearchTime;
   }
-
   return false;
 }
 #endif

@@ -327,8 +327,9 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     // Choose coins to use
     int64_t nBalance = GetBalance();
 
-    if (nBalance <= nReserveBalance)
+    if (nBalance <= nReserveBalance) {
         return false;
+    }
 
     set<pair<const CWalletTx*,unsigned int> > vwtxPrev;
 
@@ -336,11 +337,13 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     int64_t nValueIn = 0;
 
     // Select coins with suitable depth
-    if (!SelectCoinsForStaking(nBalance - nReserveBalance, txNew.nTime, setCoins, nValueIn))
+    if (!SelectCoinsForStaking(nBalance - nReserveBalance, txNew.nTime, setCoins, nValueIn)) {
         return false;
+    }
 
-    if (setCoins.empty())
+    if (setCoins.empty()) {
         return false;
+    }
 
     int64_t nCredit = 0;
     CScript scriptPubKeyKernel;
@@ -416,12 +419,14 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
         }
 
-        if (fKernelFound)
+        if (fKernelFound) {
             break; // if kernel is found stop searching
+        }
     }
 
-    if (nCredit == 0 || nCredit > nBalance - nReserveBalance)
+    if (nCredit == 0 || nCredit > nBalance - nReserveBalance) {
         return false;
+    }
 
     BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
     {
@@ -459,9 +464,11 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         if (!TransactionGetCoinAge(ptxNew, nCoinAge))
             return error("CreateCoinStake : failed to calculate coin age");
 
-        nReward = GetProofOfStakeReward(pindexPrev->nHeight + 1, nCoinAge, nFees, pindexBestHeader);
-        if (nReward <= 0)
+        auto bestHeader = chainActive.Tip();
+        nReward = GetProofOfStakeReward(pindexPrev->nHeight + 1, nCoinAge, nFees, bestHeader);
+        if (nReward <= 0) {
             return false;
+        }
 
         nCredit += nReward;
     }

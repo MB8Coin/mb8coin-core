@@ -7802,8 +7802,9 @@ static bool CheckStakeKernelHashV2(CBlockIndex* pindexPrev, unsigned int nBits, 
     }
 
     // Now check if proof-of-stake hash meets target protocol
-    if (CBigNum(ArithToUint256(hashProofOfStake)) > bnTarget)
+    if (CBigNum(ArithToUint256(hashProofOfStake)) > bnTarget) {
       return false;
+    }
 
     if (fDebug && !fPrintProofOfStake)
     {
@@ -7904,8 +7905,9 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
 
     CBlockIndex* pblockindex = mapBlockIndex[hashBlock];
 
-    if (pblockindex->GetBlockTime() + Params().GetConsensus().nStakeMinAge > nTime)
+    if (pblockindex->GetBlockTime() + Params().GetConsensus().nStakeMinAge > nTime) {
         return false;
+    }
 
     if (pBlockTime)
         *pBlockTime = pblockindex->GetBlockTime();
