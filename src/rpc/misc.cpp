@@ -77,6 +77,8 @@ UniValue getinfo(const JSONRPCRequest &request)
     LOCK(cs_main);
 #endif
 
+    auto best = chainActive.Tip();
+
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
 
@@ -92,8 +94,9 @@ UniValue getinfo(const JSONRPCRequest &request)
     }
 #endif
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
-    obj.push_back(Pair("moneysupply", ValueFromAmount(pindexBestHeader->nMoneySupply)));
-    obj.push_back(Pair("burntsupply", ValueFromAmount(pindexBestHeader->nBurntSupply)));
+    obj.push_back(Pair("moneysupply", ValueFromAmount(best->nMoneySupply)));
+    obj.push_back(Pair("burntsupply", ValueFromAmount(best->nBurntSupply)));
+    obj.push_back(Pair("blacklisted", ValueFromAmount(best->nBlacklistedSupply)));
 
     obj.push_back(Pair("timeoffset",    GetTimeOffset()));
     obj.push_back(Pair("connections",   (int)vNodes.size()));

@@ -10,6 +10,7 @@
 #include "util.h"
 #include "utilstrencodings.h"
 #include "streams.h"
+#include "unordered_set"
 
 #include <assert.h>
 
@@ -92,8 +93,8 @@ public:
         consensus.nPowTargetSpacing = 30;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 3780; // 75% of 5040
-        consensus.nMinerConfirmationWindow = 5040;
+        consensus.nRuleChangeActivationThreshold = 15120; // 75% of 20160
+        consensus.nMinerConfirmationWindow = 20160;
         consensus.nStakeMinAge = 60 * 60 * 4;	// minimum for coin age: 4 hours
         consensus.nTargetSpacing = 120; // Blocktime: 2 minutes
         consensus.nStakeCombineThreshold = 1000 * COIN;
@@ -130,6 +131,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].nStartTime = 1554076800; // April 1st, 2019
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].nTimeout = 1585699200; // April 1st, 2020
 
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].bit = 4;
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].nStartTime = 1564617600; // July 31st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].nTimeout = 1659225600; // July 31st, 2022
+
+        consensus.blackListedAddresses.clear();
+        consensus.blackListedAddresses.insert("MRzYA2pVjTvW9Gg67NJcLPVGzpwTi16Z5R");
+        consensus.blackListedAddresses.insert("MDWJsTFFhpEQvMJYmwB1GwhLHHCYN7rS9B");
+
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
@@ -145,7 +154,7 @@ public:
 
         genesis = CreateGenesisBlock(1555623620, 985, 0x1f0ffff0, 1, 0);
 
-	      consensus.hashGenesisBlock = genesis.GetHash();
+        consensus.hashGenesisBlock = genesis.GetHash();
 
         assert(consensus.hashGenesisBlock == uint256S("0x00070d0f3eca94378b015d3347fd59ddc965db57480b04706f4a4a9bd0816f97"));
         assert(genesis.hashMerkleRoot == uint256S("0x2445f0acb471830860cf0357b1615244333efb62831976f4bfd12e36bd55af84"));
@@ -188,18 +197,18 @@ public:
     CTestNetParams() {
         strNetworkID = "test";
         consensus.nSubsidyHalvingInterval = 210000;
-        consensus.nMajorityEnforceBlockUpgrade = 750;
-        consensus.nMajorityRejectBlockOutdated = 950;
-        consensus.nMajorityWindow = 1000;
-        consensus.BIP34Height = 900000;
+        consensus.nMajorityEnforceBlockUpgrade = 375;
+        consensus.nMajorityRejectBlockOutdated = 475;
+        consensus.nMajorityWindow = 500;
+        consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256S("0xecb7444214d068028ec1fa4561662433452c1cbbd6b0f8eeb6452bcfa1d0a7d6");
         consensus.powLimit = ArithToUint256(~arith_uint256(0) >> 12);
         consensus.nPowTargetTimespan = 30 * 1000;
         consensus.nPowTargetSpacing = 30;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 300; // 75% of 400
-        consensus.nMinerConfirmationWindow = 400;
+        consensus.nRuleChangeActivationThreshold = 150; // 75% of 400
+        consensus.nMinerConfirmationWindow = 200;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
@@ -214,17 +223,38 @@ public:
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512826692;
         consensus.burnAddress = "NmB8CoinBurnAddressXXXXXXXXXTmx1mV";
-        consensus.nRewardChangeHeight = 1500;
 
+        consensus.blackListedAddresses.clear();
+        consensus.blackListedAddresses.insert("NjLRvJmZpEAQkUap9Dswr46MhnF6rGZQCt");
+        consensus.blackListedAddresses.insert("NmvPA2MBWGVwsR8zJ2ypa4UNbBzgLFeYZP");
+
+        consensus.nRewardChangeHeight = 1100;
+        //
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1462060800; // May 1st, 2016
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1525132800; // May 1st, 2017
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1554076800; // April 1st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1585699200; // April 1st, 2020
 
         // Deployment of SegWit (BIP141 and BIP143)
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 5;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1493424000; // May 1st, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1525132800; // May 1st, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 3;
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1554076800; // April 1st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1585699200; // April 1st, 2020
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].bit = 6;
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].nStartTime = 1564617600; // July 31st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].nStartTime = 1659225600; // July 31st, 2022
+
+        // Deployment of SegWit (BIP141 and BIP143)
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT_LEGACY].bit = 1;
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT_LEGACY].nStartTime = 1554076800; // April 1st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT_LEGACY].nTimeout = 1585699200; // April 1st, 2020
+
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].bit = 2;
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].nStartTime = 1554076800; // April 1st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV_LEGACY].nTimeout = 1585699200; // April 1st, 2020
+
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].bit = 4;
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].nStartTime = 1564617600; // July 31st, 2019
+        consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].nTimeout = 1659225600; // July 31st, 2022
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -328,6 +358,11 @@ public:
         consensus.nLastPOWBlock = 20000;
         consensus.sigActivationTime = 0;
         consensus.burnAddress = "MB8CoinBurnAddressXXXXXXXXXXUgsoVp";
+
+        consensus.blackListedAddresses.clear();
+        consensus.blackListedAddresses.insert("MRzYA2pVjTvW9Gg67NJcLPVGzpwTi16Z5R");
+        consensus.blackListedAddresses.insert("MDWJsTFFhpEQvMJYmwB1GwhLHHCYN7rS9B");
+
 
         pchMessageStart[0] = 0xf9;
         pchMessageStart[1] = 0xef;

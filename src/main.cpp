@@ -2532,6 +2532,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     pindex->nMoneySupply = pindex->pprev != NULL ? pindex->pprev->nMoneySupply : 0;
     pindex->nBurntSupply = pindex->pprev != NULL ? pindex->pprev->nBurntSupply : 0;
+    pindex->nBlacklistedSupply = pindex->pprev != NULL ? pindex->pprev->nBlacklistedSupply : 0;
 
     if (block.IsProofOfStake())
     {
@@ -2570,7 +2571,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         setStakeSeen.insert(make_pair(pindex->prevoutStake, pindex->nStakeTime));
 
     // Check proof of stake
-    if (block.nBits != GetNextTargetRequired(pindex->pprev, block.IsProofOfStake())){
+    if (block.nBits != GetNextTargetRequired(pindex->pprev, block.IsProofOfStake())) {
         return state.DoS(1,error("ContextualCheckBlock() : incorrect %s at height %d (%d)", !block.IsProofOfStake() ? "proof-of-work" : "proof-of-stake",pindex->pprev->nHeight, block.nBits), REJECT_INVALID, "bad-diffbits");
     }
 
@@ -2851,17 +2852,27 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
 
         for (auto & out : tx.vout) {
+            auto blacklist = chainparams.GetConsensus().blackListedAddresses;
             if (out.scriptPubKey.IsPayToScriptHash()) {
                 vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
                 auto address = CMB8CoinAddress(CScriptID(uint160(hashBytes)));
                 if (chainparams.GetConsensus().burnAddress == address.ToString()) {
                     pindex->nBurntSupply += out.nValue;
                 }
+
+                auto search = blacklist.find(address.ToString());
+                if (search != blacklist.end()) {
+                    pindex->nBlacklistedSupply += out.nValue;
+                }
             } else if (out.scriptPubKey.IsPayToPublicKeyHash()) {
                 vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
                 auto address = CMB8CoinAddress(CKeyID(uint160(hashBytes)));
                 if (chainparams.GetConsensus().burnAddress == address.ToString()) {
                     pindex->nBurntSupply += out.nValue;
+                }
+                auto search = blacklist.find(address.ToString());
+                if (search != blacklist.end()) {
+                    pindex->nBlacklistedSupply += out.nValue;
                 }
             } else {
                 continue;
@@ -2903,7 +2914,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (!TransactionGetCoinAge(const_cast<CTransaction&>(block.vtx[1]), nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", block.vtx[1].GetHash().ToString());
 
-        int64_t nCalculatedStakeReward = GetProofOfStakeReward(pindex->nHeight, nCoinAge, nFees, pindex->pprev);
+        int64_t nCalculatedStakeReward = GetProofOfStakeReward(pindex->nHeight, nCoinAge, nFees, pindex->pprev, IsBlacklistEnabled(pindex->pprev, chainparams.GetConsensus()));
 
         if (nStakeReward > nCalculatedStakeReward)
             return state.DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
@@ -3961,6 +3972,18 @@ static bool CheckIndexAgainstCheckpoint(const CBlockIndex* pindexPrev, CValidati
         return state.DoS(100, error("%s: forked chain older than last checkpoint (height %d)", __func__, nHeight));
 
     return true;
+}
+
+bool IsBlacklistEnabled(const CBlockIndex *pindexPrev, const Consensus::Params & params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_BLACKLISTING, versionbitscache) == THRESHOLD_ACTIVE);
+}
+
+bool IsBlacklistLocked(const CBlockIndex *pindexPrev, const Consensus::Params& params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_BLACKLISTING, versionbitscache) == THRESHOLD_LOCKED_IN);
 }
 
 bool IsWitnessEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)

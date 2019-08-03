@@ -9,6 +9,7 @@
 #include "uint256.h"
 #include <map>
 #include <string>
+#include <unordered_set>
 
 namespace Consensus {
 
@@ -21,6 +22,7 @@ enum DeploymentPos
     DEPLOYMENT_CSV_LEGACY,
     DEPLOYMENT_SEGWIT_LEGACY,
     DEPLOYMENT_COMMUNITYFUND,
+    DEPLOYMENT_BLACKLISTING,
     MAX_VERSION_BITS_DEPLOYMENTS
 };
 
@@ -78,6 +80,7 @@ struct Params {
     unsigned int nModifierInterval; // time to elapse before new modifier is computed
     int64_t sigActivationTime;
     std::string burnAddress;
+    std::unordered_set<std::string> blackListedAddresses;
 
     /** Hard fork parameters */
     int nRewardChangeHeight;

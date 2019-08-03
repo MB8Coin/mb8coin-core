@@ -81,7 +81,7 @@ double GetPoSKernelPS()
     return result;
 }
 
-int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlockIndex* pindexPrev)
+int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlockIndex* pindexPrev, bool enforceBlacklist)
 {
     auto consensus = Params().GetConsensus();
     int64_t nSubsidy;
@@ -92,11 +92,17 @@ int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees, CBlo
         }
     } else {
         int64_t circulating = pindexPrev->nMoneySupply - pindexPrev->nBurntSupply;
+
+        if (enforceBlacklist) {
+            circulating = circulating - pindexPrev->nBlacklistedSupply;
+        }
+
         int nBlocksPerYear = Params().GetConsensus().nDailyBlockCount * 365;
+
         double nPercentageIncrease = 0.015;
+
         nSubsidy = (circulating * nPercentageIncrease) / nBlocksPerYear;
     }
 
     return  nSubsidy + nFees;
 }
-

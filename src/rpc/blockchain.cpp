@@ -1129,7 +1129,7 @@ UniValue getblockchaininfo(const JSONRPCRequest &request)
     softforks.push_back(SoftForkDesc("bip65", 4, tip, consensusParams));
     BIP9SoftForkDescPushBack(bip9_softforks, "csv", consensusParams, Consensus::DEPLOYMENT_CSV);
     BIP9SoftForkDescPushBack(bip9_softforks, "segwit", consensusParams, Consensus::DEPLOYMENT_SEGWIT);
-    BIP9SoftForkDescPushBack(bip9_softforks, "communityfund", consensusParams, Consensus::DEPLOYMENT_COMMUNITYFUND);
+    BIP9SoftForkDescPushBack(bip9_softforks, "blacklist", consensusParams, Consensus::DEPLOYMENT_BLACKLISTING);
     obj.push_back(Pair("softforks",             softforks));
     obj.push_back(Pair("bip9_softforks", bip9_softforks));
 
@@ -1377,7 +1377,7 @@ UniValue reconsiderblock(const JSONRPCRequest &request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafeMode argNames
   //  --------------------- ------------------------  -----------------------  ---------- --------
-    { "blockchain",         "getblockchaininfo",      &getblockchaininfo,      true, {}  },   
+    { "blockchain",         "getblockchaininfo",      &getblockchaininfo,      true, {}  },
     { "blockchain",         "getbestblockhash",       &getbestblockhash,       true, {}  },
     { "blockchain",         "getblockcount",          &getblockcount,          true, {} },
     { "blockchain",         "getblock",               &getblock,               true, {"blockhash","verbosity|verbose"} },

@@ -214,6 +214,7 @@ public:
     int64_t nMint;
     int64_t nMoneySupply;
     int64_t nBurntSupply;
+    int64_t nBlacklistedSupply;
 
     unsigned int nFlags;  // ppcoin: block index flags
 
@@ -245,6 +246,7 @@ public:
         nMint = 0;
         nMoneySupply = 0;
         nBurntSupply = 0;
+        nBlacklistedSupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
         hashProof = arith_uint256();
@@ -519,6 +521,7 @@ public:
         READWRITE(blockHash);
         READWRITE(nMoneySupply);
         READWRITE(nBurntSupply);
+        READWRITE(nBlacklistedSupply);
     }
 
     uint256 GetBlockHash() const
