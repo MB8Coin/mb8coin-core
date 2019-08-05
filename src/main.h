@@ -497,6 +497,7 @@ bool DisconnectBlock(const CBlock& block, CValidationState& state, const CBlockI
 bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool fCheckSig = true);
 
 /** Check wether blacklist commitments are required for block. */
+bool IsBlacklistAddress(const CScript & scriptPubKey);
 bool IsBlacklistEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 bool IsBlacklistLocked(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 

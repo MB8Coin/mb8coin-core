@@ -1176,6 +1176,16 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         return state.DoS(0, false, REJECT_NONSTANDARD, "no-witness-yet", true);
     }
 
+    bool blacklistEnabled = IsBlacklistEnabled(chainActive.Tip(), Params().GetConsensus());
+    const CCoinsViewCache& view = *pcoinsTip;
+    for (auto txin : tx.vin) {
+      const CCoins *coins = view.AccessCoins(txin.prevout.hash);
+      auto prevout = txin.prevout;
+      if (blacklistEnabled && IsBlacklistAddress(coins->vout[prevout.n].scriptPubKey)) {
+        return state.DoS(100, false, REJECT_INVALID, "bad-txns-blacklisted-address-input");
+      }
+    }
+
     // Rather not work on nonstandard transactions (unless -testnet/-regtest)
     string reason;
     if (fRequireStandard && !IsStandardTx(tx, reason, witnessEnabled))
@@ -3972,6 +3982,24 @@ static bool CheckIndexAgainstCheckpoint(const CBlockIndex* pindexPrev, CValidati
         return state.DoS(100, error("%s: forked chain older than last checkpoint (height %d)", __func__, nHeight));
 
     return true;
+}
+
+bool IsBlacklistAddress(const CScript & scriptPubKey) {
+    auto chainparams = Params();
+    auto blacklist = chainparams.GetConsensus().blackListedAddresses;
+    if (scriptPubKey.IsPayToScriptHash()) {
+        vector<unsigned char> hashBytes(scriptPubKey.begin()+2, scriptPubKey.begin()+22);
+        auto address = CMB8CoinAddress(CScriptID(uint160(hashBytes)));
+        auto search = blacklist.find(address.ToString());
+        return (search != blacklist.end());
+    } else if (scriptPubKey.IsPayToPublicKeyHash()) {
+        vector<unsigned char> hashBytes(scriptPubKey.begin()+3, scriptPubKey.begin()+23);
+        auto address = CMB8CoinAddress(CKeyID(uint160(hashBytes)));
+        auto search = blacklist.find(address.ToString());
+        return (search != blacklist.end());
+    }
+
+    return false;
 }
 
 bool IsBlacklistEnabled(const CBlockIndex *pindexPrev, const Consensus::Params & params)
