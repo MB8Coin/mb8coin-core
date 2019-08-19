@@ -394,8 +394,7 @@ UniValue sendtoaddress(const JSONRPCRequest &request)
             "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
             "                             to which you're sending the transaction. This is not part of the \n"
             "                             transaction, just kept in your wallet.\n"
-            "5. \"anon-destination\"  (string, optional) Encrypted destination address if you're sending a MB8tech transaction \n"
-            "6. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
+            "5. subtractfeefromamount  (boolean, optional, default=false) The fee will be deducted from the amount being sent.\n"
             "                             The recipient will receive less mb8coins than you enter in the amount field.\n"
             "\nResult:\n"
             "\"transactionid\"  (string) The transaction id.\n"
@@ -448,8 +447,8 @@ UniValue sendtoaddress(const JSONRPCRequest &request)
         wtx.mapValue["to"] = request.params[3].get_str();
 
     bool fSubtractFeeFromAmount = false;
-    if (request.params.size() > 5)
-        fSubtractFeeFromAmount = request.params[5].get_bool();
+    if (request.params.size() > 4)
+        fSubtractFeeFromAmount = request.params[4].get_bool();
 
     EnsureWalletIsUnlocked();
 
