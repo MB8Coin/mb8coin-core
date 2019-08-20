@@ -381,9 +381,9 @@ UniValue sendtoaddress(const JSONRPCRequest &request)
     if (!EnsureWalletIsAvailable(request.fHelp))
         return NullUniValue;
 
-    if (request.fHelp || request.params.size() < 2 || request.params.size() > 6)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 5)
         throw runtime_error(
-            "sendtoaddress \"mb8coinaddress\" amount ( \"comment\" \"comment-to\" \"anon-destination\" subtractfeefromamount )\n"
+            "sendtoaddress \"mb8coinaddress\" amount ( \"comment\" \"comment-to\" subtractfeefromamount )\n"
             "\nSend an amount to a given address.\n"
             + HelpRequiringPassphrase() +
             "\nArguments:\n"
