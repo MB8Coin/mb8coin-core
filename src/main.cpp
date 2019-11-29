@@ -1181,8 +1181,11 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
     for (auto txin : tx.vin) {
       const CCoins *coins = view.AccessCoins(txin.prevout.hash);
       auto prevout = txin.prevout;
-      if (blacklistEnabled && IsBlacklistAddress(coins->vout[prevout.n].scriptPubKey)) {
-        return state.DoS(100, false, REJECT_INVALID, "bad-txns-blacklisted-address-input");
+
+      if (coins != nullptr && coins->vout.size() < prevout.n) {
+        if (blacklistEnabled && IsBlacklistAddress(coins->vout[prevout.n].scriptPubKey)) {
+          return state.DoS(100, false, REJECT_INVALID, "bad-txns-blacklisted-address-input");
+        }
       }
     }
 
