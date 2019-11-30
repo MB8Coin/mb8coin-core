@@ -16,10 +16,10 @@ double GetDifficulty(const CBlockIndex* blockindex)
   // minimum difficulty = 1.0.
   if (blockindex == NULL)
   {
-      if (pindexBestHeader == NULL)
+      if (chainActive.Tip() == NULL)
           return 1.0;
       else
-          blockindex = GetLastBlockIndex(pindexBestHeader, false);
+          blockindex = GetLastBlockIndex(chainActive.Tip(), false);
   }
 
   int nShift = (blockindex->nBits >> 24) & 0xff;
@@ -52,7 +52,7 @@ double GetPoSKernelPS()
     double dStakeKernelsTriedAvg = 0;
     int nStakesHandled = 0, nStakesTime = 0;
 
-    CBlockIndex* pindex = pindexBestHeader;
+    CBlockIndex* pindex = chainActive.Tip();
     CBlockIndex* pindexPrevStake = NULL;
 
     while (pindex && nStakesHandled < nPoSInterval)
