@@ -759,8 +759,7 @@ bool SignBlock(CBlock *pblock, CWallet& wallet, int64_t nFees)
       int64_t nSearchInterval = nBestHeight+1 > 0 ? 1 : nSearchTime - nLastCoinStakeSearchTime;
       if (wallet.CreateCoinStake(wallet, pblock->nBits, nSearchInterval, nFees, txCoinStake, key))
       {
-
-          if (txCoinStake.nTime >= bestHeader->GetPastTimeLimit()+1)
+          if (txCoinStake.nTime + 3605 >= bestHeader->GetPastTimeLimit()+1)
           {
               // make sure coinstake would meet timestamp protocol
               //    as it would be the same as the block timestamp
@@ -802,6 +801,7 @@ bool SignBlock(CBlock *pblock, CWallet& wallet, int64_t nFees)
 
               return key.Sign(pblock->GetHash(), pblock->vchBlockSig);
           }
+      } else {
       }
       nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
       nLastCoinStakeSearchTime = nSearchTime;
@@ -819,8 +819,9 @@ bool CheckStake(CBlock* pblock, CWallet& wallet, const CChainParams& chainparams
         return error("CheckStake() : %s is not a proof-of-stake block", hashBlock.GetHex());
 
     // verify hash target and signature of coinstake tx
-    if (!CheckProofOfStake(mapBlockIndex[pblock->hashPrevBlock], pblock->vtx[1], pblock->nBits, proofHash, hashTarget, NULL))
+    if (!CheckProofOfStake(mapBlockIndex[pblock->hashPrevBlock], pblock->vtx[1], pblock->nBits, proofHash, hashTarget, NULL)) {
         return error("CheckStake() : proof-of-stake checking failed");
+    }
 
     //// debug print
     LogPrintf("CheckStake() : new proof-of-stake block found hash: %s\n", hashBlock.GetHex());
