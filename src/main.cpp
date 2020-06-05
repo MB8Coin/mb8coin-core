@@ -1855,23 +1855,6 @@ bool fLargeWorkForkFound = false;
 bool fLargeWorkInvalidChainFound = false;
 CBlockIndex *pindexBestForkTip = NULL, *pindexBestForkBase = NULL;
 
-static void AlertNotify(const std::string& strMessage)
-{
-    uiInterface.NotifyAlertChanged();
-    std::string strCmd = GetArg("-alertnotify", "");
-    if (strCmd.empty()) return;
-
-    // Alert text should be plain ascii coming from a trusted source, but to
-    // be safe we first strip anything not in safeChars, then add single quotes around
-    // the whole string before passing it to the shell:
-    std::string singleQuote("'");
-    std::string safeStatus = SanitizeString(strMessage);
-    safeStatus = singleQuote+safeStatus+singleQuote;
-    boost::replace_all(strCmd, "%s", safeStatus);
-
-    boost::thread t(runCommand, strCmd); // thread runs free
-}
-
 void CheckForkWarningConditions()
 {
     AssertLockHeld(cs_main);
@@ -2485,6 +2468,12 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
 
     if(IsWitnessEnabled(pindexPrev,Params().GetConsensus()))
         nVersion |= nSegWitVersionMask;
+
+    if(IsBlacklistEnabled(pindexPrev,Params().GetConsensus()))
+        nVersion |= nBlacklistVersionMask;
+
+    if(IsNtpSyncEnabled(pindexPrev,Params().GetConsensus()))
+        nVersion |= nNSyncVersionMask;
 
     return nVersion;
 }
@@ -4011,6 +4000,12 @@ bool IsBlacklistEnabled(const CBlockIndex *pindexPrev, const Consensus::Params &
     return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_BLACKLISTING, versionbitscache) == THRESHOLD_ACTIVE);
 }
 
+bool IsNtpSyncEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_NTPSYNC, versionbitscache) == THRESHOLD_ACTIVE);
+}
+
 bool IsBlacklistLocked(const CBlockIndex *pindexPrev, const Consensus::Params& params)
 {
     LOCK(cs_main);
@@ -4090,9 +4085,8 @@ std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBloc
 
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, CBlockIndex * const pindexPrev, int64_t nAdjustedTime)
 {
-
     // Check timestamp
-    if (block.GetBlockTime() > nAdjustedTime + 2 * 60 * 60)
+    if (block.GetBlockTime() > nAdjustedTime + (IsNtpSyncEnabled(pindexPrev,Params().GetConsensus()) ? Params().GetConsensus().nMaxFutureDrift : 2 * 60 * 60))
         return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
@@ -4108,6 +4102,10 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if((block.nVersion & nSegWitVersionMask) != nSegWitVersionMask && IsWitnessEnabled(pindexPrev,Params().GetConsensus()))
         return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
                            "rejected no segwit block");
+
+    if((block.nVersion & nNSyncVersionMask) != nNSyncVersionMask && IsNtpSyncEnabled(pindexPrev,Params().GetConsensus()))
+        return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
+            "rejected no nsync block");
 
     return true;
 }
@@ -4125,6 +4123,9 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
 
     if (block.IsProofOfWork() && nHeight > Params().GetConsensus().nLastPOWBlock)
         return state.DoS(10, false, REJECT_INVALID, "check-pow-height", "pow-mined blocks not allowed");
+
+    if (IsNtpSyncEnabled(pindexPrev,Params().GetConsensus()) && block.GetBlockTime() < pindexPrev->GetPastTimeLimit())
+        return state.Invalid(false, REJECT_INVALID, "too-old", "block goes too far in the past");
 
     if (block.IsProofOfStake() && nHeight < Params().GetConsensus().nFirstPOSBlock)
         return state.DoS(10, false, REJECT_INVALID, "check-pos-height", "pos-mined blocks not allowed");
@@ -5739,6 +5740,17 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             }
         }
 
+        int64_t nTimeOffset = nTime - GetTime();
+        pfrom->nTimeOffset = nTimeOffset;
+        if(IsNtpSyncEnabled(chainActive.Tip(), Params().GetConsensus()) && abs64(pfrom->nTimeOffset) > GetArg("-maxtimeoffset", MAXIMUM_TIME_OFFSET))
+        {
+            LogPrintf("peer=%d clock drifts too much (%d); disconnecting\n", pfrom->id, pfrom->nTimeOffset);
+            pfrom->PushMessage(NetMsgType::REJECT, strCommand, REJECT_INVALID,
+                strprintf("Clock drift cannot be greater than %d. Please, adjust your clock.", GetArg("-maxtimeoffset", MAXIMUM_TIME_OFFSET)));
+            pfrom->fDisconnect = true;
+            return false;
+        }
+
         pfrom->fSuccessfullyConnected = true;
 
         string remoteAddr;
@@ -5749,10 +5761,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                   pfrom->cleanSubVer, pfrom->nVersion,
                   pfrom->nStartingHeight, addrMe.ToString(), pfrom->id,
                   remoteAddr);
-
-        int64_t nTimeOffset = nTime - GetTime();
-        pfrom->nTimeOffset = nTimeOffset;
-        AddTimeData(pfrom->addr, nTimeOffset);
     }
 
 

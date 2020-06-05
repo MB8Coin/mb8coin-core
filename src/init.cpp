@@ -24,6 +24,7 @@
 #include "main.h"
 #include "miner.h"
 #include "net.h"
+#include "ntpclient.h"
 #include "policy/policy.h"
 #include "rpc/server.h"
 #include "rpc/register.h"
@@ -36,6 +37,7 @@
 #include "torcontrol.h"
 #include "ui_interface.h"
 #include "util.h"
+#include "utiltime.h"
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #ifdef ENABLE_WALLET
@@ -72,6 +74,7 @@ char *sPrivKey, *sPubKey;
 using namespace std;
 
 bool fFeeEstimatesInitialized = false;
+volatile bool fRestartRequested = false; // true: restart false: shutdown
 static const bool DEFAULT_PROXYRANDOMIZE = true;
 static const bool DEFAULT_REST_ENABLE = false;
 static const bool DEFAULT_DISABLE_SAFEMODE = false;
@@ -182,8 +185,11 @@ void Interrupt(boost::thread_group& threadGroup)
     threadGroup.interrupt_all();
 }
 
-void Shutdown()
+/** Preparing steps before shutting down or restarting the wallet */
+void PrepareShutdown()
 {
+    fRequestShutdown = true;  // Needed when we shutdown the wallet
+    fRestartRequested = true; // Needed when we restart the wallet
     LogPrintf("%s: In progress...\n", __func__);
     static CCriticalSection cs_Shutdown;
     TRY_LOCK(cs_Shutdown, lockShutdown);
@@ -194,7 +200,7 @@ void Shutdown()
     /// for example if the data directory was found to be locked.
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
-    RenameThread("mb8coin-shutoff");
+    RenameThread("navcoin-shutoff");
     mempool.AddTransactionsUpdated(1);
 
     StopHTTPRPC();
@@ -206,7 +212,6 @@ void Shutdown()
         pwalletMain->Flush(false);
 #endif
     StopNode();
-    StopTorControl();
     UnregisterNodeSignals(GetNodeSignals());
 
     if (fFeeEstimatesInitialized)
@@ -222,17 +227,17 @@ void Shutdown()
 
     {
         LOCK(cs_main);
-        if (pcoinsTip != NULL) {
+        if (pcoinsTip != nullptr) {
             FlushStateToDisk();
         }
         delete pcoinsTip;
-        pcoinsTip = NULL;
+        pcoinsTip = nullptr;
         delete pcoinscatcher;
-        pcoinscatcher = NULL;
+        pcoinscatcher = nullptr;
         delete pcoinsdbview;
-        pcoinsdbview = NULL;
+        pcoinsdbview = nullptr;
         delete pblocktree;
-        pblocktree = NULL;
+        pblocktree = nullptr;
     }
 #ifdef ENABLE_WALLET
     if (pwalletMain)
@@ -243,7 +248,7 @@ void Shutdown()
     if (pzmqNotificationInterface) {
         UnregisterValidationInterface(pzmqNotificationInterface);
         delete pzmqNotificationInterface;
-        pzmqNotificationInterface = NULL;
+        pzmqNotificationInterface = nullptr;
     }
 #endif
 
@@ -255,9 +260,20 @@ void Shutdown()
     }
 #endif
     UnregisterAllValidationInterfaces();
+}
+
+void Shutdown()
+{
+    LogPrintf("%s: In progress...\n", __func__);
+    if (!fRestartRequested) {
+        PrepareShutdown();
+    }
+    StopTorControl();
+    // Shutdown part 2: Stop TOR thread and delete wallet instance
+    StopTorControl();
 #ifdef ENABLE_WALLET
     delete pwalletMain;
-    pwalletMain = NULL;
+    pwalletMain = nullptr;
 #endif
     globalVerifyHandle.reset();
     ECC_Stop();
@@ -1088,6 +1104,65 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 #endif // ENABLE_WALLET
     // ********************************************************* Step 6: network initialization
 
+    uiInterface.InitMessage(_("Synchronizing clock..."));
+
+    string sMsg = "";
+    int nWarningCounter = 0;
+    int nMinMeasures = GetArg("-ntpminmeasures", MINIMUM_NTP_MEASURE);
+
+    if(nMinMeasures == 0)
+    {
+        sMsg = "You have set to ignore NTP Sync with the wallet "
+               "setting ntpminmeasures=0. Please be aware that "
+               "your system clock needs to be correct in order "
+               "to synchronize with the network. ";
+    } else if(nMinMeasures > 0) {
+        while(1)
+        {
+            if(ShutdownRequested())
+                break;
+            if(!NtpClockSync())
+            {
+                sMsg = "A connection could not be made to any ntp server. "
+                       "Please ensure you system clock is correct otherwise "
+                       "your stakes will be rejected by the network";
+
+                if (nWarningCounter == 0)
+                {
+                    uiInterface.ThreadSafeMessageBox(sMsg, "", CClientUIInterface::MSG_ERROR);
+                }
+
+                strMiscWarning = sMsg;
+                AlertNotify(strMiscWarning);
+                LogPrintf(strMiscWarning.c_str());
+
+                uiInterface.InitMessage(_(strprintf("Synchronizing clock attempt %i...", nWarningCounter+1).c_str()));
+
+                nWarningCounter++;
+
+                if(!ShutdownRequested())
+                {
+                    MilliSleep(10000);
+                }
+            }
+            else
+            {
+                strMiscWarning = "";
+                sMsg = "";
+                break;
+            }
+        }
+    }
+
+    if (sMsg != "")
+    {
+        uiInterface.ThreadSafeMessageBox(sMsg, "", CClientUIInterface::MSG_ERROR);
+        strMiscWarning = sMsg;
+        AlertNotify(strMiscWarning);
+        LogPrintf(strMiscWarning.c_str());
+    }
+
+
     RegisterNodeSignals(GetNodeSignals());
 
     // sanitize comments per BIP-0014, format user agent and check total size
@@ -1543,4 +1618,21 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 #endif
 
     return !fRequestShutdown;
+}
+
+void AlertNotify(const std::string& strMessage)
+{
+    uiInterface.NotifyAlertChanged();
+    std::string strCmd = GetArg("-alertnotify", "");
+    if (strCmd.empty()) return;
+
+    // Alert text should be plain ascii coming from a trusted source, but to
+    // be safe we first strip anything not in safeChars, then add single quotes around
+    // the whole string before passing it to the shell:
+    std::string singleQuote("'");
+    std::string safeStatus = SanitizeString(strMessage);
+    safeStatus = singleQuote+safeStatus+singleQuote;
+    boost::replace_all(strCmd, "%s", safeStatus);
+
+    boost::thread t(runCommand, strCmd); // thread runs free
 }

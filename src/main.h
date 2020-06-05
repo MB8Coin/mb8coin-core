@@ -496,10 +496,13 @@ bool DisconnectBlock(const CBlock& block, CValidationState& state, const CBlockI
 /** Check a block is completely valid from start to finish (only works on top of our current best block, with cs_main held) */
 bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool fCheckSig = true);
 
-/** Check wether blacklist commitments are required for block. */
+/** Check whether blacklist commitments are required for block. */
 bool IsBlacklistAddress(const CScript & scriptPubKey);
 bool IsBlacklistEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 bool IsBlacklistLocked(const CBlockIndex* pindexPrev, const Consensus::Params& params);
+
+/** Check whether NtpSync has been activated. */
+bool IsNtpSyncEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 
 /** Check whether witness commitments are required for block. */
 bool IsWitnessEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);

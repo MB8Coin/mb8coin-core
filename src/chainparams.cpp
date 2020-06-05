@@ -107,6 +107,7 @@ public:
         consensus.sigActivationTime = 1512990000;
         consensus.burnAddress = "MB8CoinBurnAddressXXXXXXXXXXUgsoVp";
         consensus.nRewardChangeHeight = 35000;
+        consensus.nMaxFutureDrift = 60;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
@@ -134,6 +135,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].bit = 4;
         consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].nStartTime = 1564617600; // July 31st, 2019
         consensus.vDeployments[Consensus::DEPLOYMENT_BLACKLISTING].nTimeout = 1659225600; // July 31st, 2022
+
+        consensus.vDeployments[Consensus::DEPLOYMENT_NTPSYNC].bit = 5;
+        consensus.vDeployments[Consensus::DEPLOYMENT_NTPSYNC].nStartTime = 1593561600; // July 1st, 2020
+        consensus.vDeployments[Consensus::DEPLOYMENT_NTPSYNC].nTimeout = 1656633600; // July 1st, 2022
 
         consensus.blackListedAddresses.clear();
         consensus.blackListedAddresses.insert("MRzYA2pVjTvW9Gg67NJcLPVGzpwTi16Z5R");
@@ -223,6 +228,7 @@ public:
         consensus.nFirstPOSBlock = consensus.nLastPOWBlock;
         consensus.sigActivationTime = 1512826692;
         consensus.burnAddress = "NmB8CoinBurnAddressXXXXXXXXXTmx1mV";
+        consensus.nMaxFutureDrift = 60;
 
         consensus.blackListedAddresses.clear();
         consensus.blackListedAddresses.insert("NjLRvJmZpEAQkUap9Dswr46MhnF6rGZQCt");
@@ -358,6 +364,7 @@ public:
         consensus.nLastPOWBlock = 20000;
         consensus.sigActivationTime = 0;
         consensus.burnAddress = "MB8CoinBurnAddressXXXXXXXXXXUgsoVp";
+        consensus.nMaxFutureDrift = 60000;
 
         consensus.blackListedAddresses.clear();
         consensus.blackListedAddresses.insert("MRzYA2pVjTvW9Gg67NJcLPVGzpwTi16Z5R");

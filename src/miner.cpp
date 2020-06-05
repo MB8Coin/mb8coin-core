@@ -14,9 +14,12 @@
 #include "consensus/consensus.h"
 #include "consensus/merkle.h"
 #include "consensus/validation.h"
+#include "core_io.h"
 #include "hash.h"
+#include "init.h"
 #include "main.h"
 #include "net.h"
+#include "ntpclient.h"
 #include "policy/policy.h"
 #include "pos.h"
 #include "primitives/transaction.h"
@@ -25,6 +28,7 @@
 #include "timedata.h"
 #include "txmempool.h"
 #include "util.h"
+#include "utiltime.h"
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "versionbits.h"
@@ -35,6 +39,7 @@
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <queue>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -53,6 +58,10 @@ uint64_t nLastBlockTx = 0;
 uint64_t nLastBlockSize = 0;
 uint64_t nLastBlockWeight = 0;
 uint64_t nLastCoinStakeSearchInterval = 0;
+uint64_t nLastTime = 0;
+uint64_t nLastSteadyTime = 0;
+
+bool fIncorrectTime = false;
 
 class ScoreCompare
 {
@@ -682,6 +691,30 @@ void MB8CoinStaker(const CChainParams& chainparams)
             while (chainparams.GetConsensus().nFirstPOSBlock > chainActive.Tip()->nHeight) {
               MilliSleep(30000);
             }
+
+            if (nLastTime != 0 && nLastSteadyTime != 0)
+            {
+                int64_t nClockDifference = GetTimeMillis() - nLastTime;
+                int64_t nSteadyClockDifference = GetSteadyTime() - nLastSteadyTime;
+
+                if(abs64(nClockDifference - nSteadyClockDifference) > 1000)
+                {
+                    fIncorrectTime = true;
+                    LogPrintf("*** System clock change detected. Staking will be paused until the clock is synced again.\n");
+                }
+                if(fIncorrectTime) {
+                    if(!NtpClockSync()) {
+                        MilliSleep(10000);
+                        continue;
+                    } else {
+                        fIncorrectTime = false;
+                        LogPrintf("*** Starting staking thread again.\n");
+                    }
+                }
+            }
+
+            nLastTime = GetTimeMillis();
+            nLastSteadyTime = GetSteadyTime();
 
             //
             // Create new block

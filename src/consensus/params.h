@@ -23,6 +23,7 @@ enum DeploymentPos
     DEPLOYMENT_SEGWIT_LEGACY,
     DEPLOYMENT_COMMUNITYFUND,
     DEPLOYMENT_BLACKLISTING,
+    DEPLOYMENT_NTPSYNC,
     MAX_VERSION_BITS_DEPLOYMENTS
 };
 
@@ -81,6 +82,7 @@ struct Params {
     int64_t sigActivationTime;
     std::string burnAddress;
     std::unordered_set<std::string> blackListedAddresses;
+    int64_t nMaxFutureDrift;
 
     /** Hard fork parameters */
     int nRewardChangeHeight;

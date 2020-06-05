@@ -15,6 +15,7 @@
 using namespace std;
 
 static int64_t nMockTime = 0; //!< For unit testing
+static int64_t nNtpTimeOffset = 0;
 
 int64_t GetTime()
 {
@@ -23,6 +24,23 @@ int64_t GetTime()
     time_t now = time(NULL);
     assert(now > 0);
     return now;
+}
+
+int64_t GetTimeNow()
+{
+    if (nMockTime) return nMockTime;
+
+    time_t now = time(NULL);
+    assert(now > 0);
+    return now;
+}
+
+int64_t GetSteadyTime()
+{
+    auto now = std::chrono::steady_clock::now();
+    auto millisecs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+    assert(millisecs.count() > 0);
+    return millisecs.count();
 }
 
 void SetMockTime(int64_t nMockTimeIn)
@@ -79,5 +97,62 @@ std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime)
     std::stringstream ss;
     ss.imbue(loc);
     ss << boost::posix_time::from_time_t(nTime);
+    return ss.str();
+}
+
+int64_t GetNtpTimeOffset()
+{
+    return nNtpTimeOffset;
+}
+
+void SetNtpTimeOffset(uint64_t nTimeOffsetIn)
+{
+    nNtpTimeOffset = nTimeOffsetIn;
+}
+
+std::string StringifySeconds(uint64_t n)
+{
+    using namespace std::chrono;
+    std::chrono::seconds input_seconds{n};
+    typedef duration<int, std::ratio<30 * 86400>> months;
+    auto M = duration_cast<months>(input_seconds);
+    input_seconds -= M;
+    typedef duration<int, std::ratio<86400>> days;
+    auto d = duration_cast<days>(input_seconds);
+    input_seconds -= d;
+    auto h = duration_cast<hours>(input_seconds);
+    input_seconds -= h;
+    auto m = duration_cast<minutes>(input_seconds);
+    input_seconds -= m;
+    auto s = duration_cast<seconds>(input_seconds);
+
+    auto Mc = M.count();
+    auto dc = d.count();
+    auto hc = h.count();
+    auto mc = m.count();
+    auto sc = s.count();
+
+    std::stringstream ss;
+    ss.fill('0');
+    if (Mc) {
+        ss << M.count() << " months ";
+    }
+
+    if (Mc || dc) {
+        ss << d.count() << " days ";
+    }
+    if (Mc || dc || hc) {
+        if (Mc || dc) { ss << std::setw(2); }
+        ss << h.count() << " hours ";
+    }
+    if (Mc || dc || hc || mc) {
+        if (Mc || dc || hc) { ss << std::setw(2); }
+        ss << m.count() << " minutes ";
+    }
+    if (Mc || dc || hc || mc || sc) {
+        if (Mc || dc || hc || mc) { ss << std::setw(2); }
+        ss << s.count() << " seconds";
+    }
+
     return ss.str();
 }
