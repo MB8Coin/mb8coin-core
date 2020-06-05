@@ -15,6 +15,7 @@
 #include "timedata.h"
 #include "ui_interface.h"
 #include "util.h"
+#include "utiltime.h"
 #include "utilstrencodings.h"
 #include "version.h"
 #include "wallet/wallet.h"
@@ -469,6 +470,7 @@ UniValue getnetworkinfo(const JSONRPCRequest &request)
             "  \"localservices\": \"xxxxxxxxxxxxxxxx\", (string) the services we offer to the network\n"
             "  \"localrelay\": true|false,              (bool) true if transaction relay is requested from peers\n"
             "  \"timeoffset\": xxxxx,                   (numeric) the time offset\n"
+            "  \"ntptimeoffset\": xxxxx,                (numeric) the ntptime offset\n"
             "  \"connections\": xxxxx,                  (numeric) the number of connections\n"
             "  \"networks\": [                          (array) information per network\n"
             "  {\n"
@@ -504,6 +506,7 @@ UniValue getnetworkinfo(const JSONRPCRequest &request)
     obj.push_back(Pair("localservices",       strprintf("%016x", nLocalServices)));
     obj.push_back(Pair("localrelay",     fRelayTxes));
     obj.push_back(Pair("timeoffset",    GetTimeOffset()));
+    obj.push_back(Pair("ntptimeoffset", GetNtpTimeOffset()));
     obj.push_back(Pair("connections",   (int)vNodes.size()));
     obj.push_back(Pair("networks",      GetNetworksInfo()));
     obj.push_back(Pair("relayfee",      ValueFromAmount(::minRelayTxFee.GetFeePerK())));
